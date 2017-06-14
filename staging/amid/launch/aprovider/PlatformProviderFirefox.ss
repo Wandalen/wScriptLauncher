@@ -1,4 +1,4 @@
-( function _PlatformProviderChrome_ss_() {
+( function _PlatformProviderFirefox_ss_() {
 
 'use strict';
 
@@ -13,7 +13,7 @@ var _ = wTools;
 //
 
 var Parent = _.PlatformProvider.Abstract;
-var Self = function wPlatformProviderChrome( o )
+var Self = function wPlatformProviderFirefox( o )
 {
   if( !( this instanceof Self ) )
   if( o instanceof Self )
@@ -29,6 +29,14 @@ function init( o )
 {
   var self = this;
   Parent.prototype.init.call( self,o );
+}
+
+//
+
+function runAct()
+{
+  var self = this;
+  return _.shell('open --background --hide -a firefox --args -silent ' + self.url );
 }
 
 // --
@@ -60,6 +68,8 @@ var Proto =
 
   init : init,
 
+  runAct : runAct,
+
   //
 
   constructor : Self,
@@ -85,7 +95,7 @@ _.PlatformProvider.AdvancedMixin.mixin( Self );
 
 
 _.PlatformProvider = _.PlatformProvider || {};
-_.PlatformProvider.Chrome = Self;
+_.PlatformProvider.Firefox = Self;
 
 
 if( typeof module !== 'undefined' )

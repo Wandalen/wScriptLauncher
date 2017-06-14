@@ -40,12 +40,21 @@ function init( o )
 
 }
 
+//
+
+function run()
+{
+  var self = this;
+  return self.runAct();
+}
+
 // --
 // relationship
 // --
 
 var Composes =
 {
+  url : null
 }
 
 var Aggregates =
@@ -72,6 +81,10 @@ var Proto =
 {
 
   init : init,
+
+  //
+
+  run : run,
 
   // relationships
 

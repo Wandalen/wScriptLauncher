@@ -7,7 +7,10 @@ var _ = wTools;
 
 /**/
 
-var launcher = wScriptLauncher();
+var launcher = wScriptLauncher
+({
+  providerOptions : { url : '127.0.0.1:3000' }
+});
 launcher.launch()
 .got( function ( err, provider )
 {
@@ -15,4 +18,4 @@ launcher.launch()
   throw err;
 
   console.log( provider );
-})
+});

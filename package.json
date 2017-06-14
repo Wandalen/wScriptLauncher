@@ -24,9 +24,12 @@
   "dependencies": {
     "wTools": "",
     "wConsequence": "",
+    "wLogger": "",
     "wCopyable": "",
     "wProto": "",
     "wFiles": "",
+    "socket.io": "",
+    "express": "",
     "browser-run": "",
     "browserify": ""
   },
