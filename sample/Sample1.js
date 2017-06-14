@@ -11,7 +11,7 @@ var _ = wTools;
 
 /**/
 
-var browser = run();
+var browser = run({ browser : 'firefox' });
 browser.pipe( process.stdout );
 var script = _.fileProvider.fileRead( __dirname + '/helloworld.js' );
 browser.end( script );
