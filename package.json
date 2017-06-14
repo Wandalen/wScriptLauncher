@@ -1,0 +1,33 @@
+
+{
+  "name": "//>-->//package.name//<--<//",
+  "version": "0.3.1",
+  "description": "",
+  "author": "Kostiantyn Wandalen <wtory.net@domainsbyproxy.com>",
+  "license": "MIT",
+  "main": "staging/amid/file/FileMid.s",
+  "files": [
+    "staging/amid",
+    "production"
+  ],
+  "scripts": {
+    "test": "node ./staging/amid/z.test/Test.s",
+    "make_doc": "./doc.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Wandalen///>-->//package.name//<--<//.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Wandalen///>-->//package.name//<--<///issues"
+  },
+  "dependencies": {
+    "wTools": ""
+  },
+  "devDependencies": {
+    "wTesting": ""
+  },
+  "keywords": [
+    "wTools"
+  ]
+}
