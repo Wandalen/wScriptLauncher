@@ -24,7 +24,8 @@
   "dependencies": {
     "wTools": "",
     "wFiles": "",
-    "browser-run": ""
+    "browser-run": "",
+    "browserify": ""
   },
   "devDependencies": {
     "wTesting": ""
