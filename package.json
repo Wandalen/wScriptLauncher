@@ -23,6 +23,9 @@
   },
   "dependencies": {
     "wTools": "",
+    "wConsequence": "",
+    "wCopyable": "",
+    "wProto": "",
     "wFiles": "",
     "browser-run": "",
     "browserify": ""
