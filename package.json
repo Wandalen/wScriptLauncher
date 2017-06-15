@@ -1,6 +1,6 @@
 
 {
-  "name": "wScriptLauncher",
+  "name": "wscriptlauncher",
   "version": "0.3.1",
   "description": "Module in JavaScript providing easy way to lauch your scripts in browser",
   "author": "Kostiantyn Wandalen <wtory.net@domainsbyproxy.com>",
@@ -24,7 +24,7 @@
     "wTools": "",
     "wConsequence": "",
     "wLogger": "",
-    "wLoggerToServer": "",
+    "wloggertoserver": "",
     "wCopyable": "",
     "wProto": "",
     "wFiles": "",
