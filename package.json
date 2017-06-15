@@ -11,6 +11,7 @@
     "production"
   ],
   "scripts": {
+    "test": "wtest staging",
     "make_doc": "./doc.sh"
   },
   "repository": {
