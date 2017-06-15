@@ -30,11 +30,17 @@
     <script>
     var _ = wTools;
     _.io = io;
+    wLogger.rawOutput = true;
     var l = new wLoggerToServer();
+    wLogger.consoleBar
+    ({
+      outputLogger : l,
+      bar : 1
+    });
     l.connect()
     .doThen( function ()
     {
-      l.log( 'Message from wLoggerToServer' );
+      logger.log( _.strColor.fg( 'Message from wLoggerToServer', 'red' ) );
       l.disconnect();
     })
 
