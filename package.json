@@ -23,7 +23,14 @@
   },
   "dependencies": {
     "wTools": "",
+    "wConsequence": "",
+    "wLogger": "",
+    "wLoggerToServer": "",
+    "wCopyable": "",
+    "wProto": "",
     "wFiles": "",
+    "socket.io": "",
+    "express": "",
     "browser-run": "",
     "browserify": ""
   },
