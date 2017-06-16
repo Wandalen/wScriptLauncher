@@ -55,7 +55,7 @@ function launch()
   var self = this;
   self._serverStart();
 
-  self.done.got( function ( err )
+  self.launchDone.got( function ( err )
   {
     if( err )
     throw _.err( err );
@@ -67,11 +67,11 @@ function launch()
       if( err )
       throw _.err( err );
 
-      self.done.give( provider )
+      self.launchDone.give( provider )
     })
   });
 
-  return self.done;
+  return self.launchDone;
 }
 
 //
@@ -108,7 +108,7 @@ function _serverStart( )
   server.listen( port, function ()
   {
     console.log( 'Server started on port ', port );
-    self.done.give();
+    self.launchDone.give();
   });
 }
 
@@ -119,7 +119,7 @@ function _serverStart( )
 var Composes =
 {
   providerOptions : null,
-  done : new wConsequence()
+  launchDone : new wConsequence()
 }
 
 var Aggregates =
