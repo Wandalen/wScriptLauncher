@@ -11,7 +11,7 @@ if( typeof module !== "undefined" )
 
   var launcher = wScriptLauncher
   ({
-    headless : false,
+    headless : args.map.headless,
     filePath : args.map.filePath,
     browser : args.map.browser
   });
