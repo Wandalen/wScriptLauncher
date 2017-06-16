@@ -11,11 +11,11 @@ var launcher = wScriptLauncher
 ({
   providerOptions : { url : 'http://localhost:3000' }
 });
+
 launcher.launch()
 .got( function ( err, provider )
 {
   if( err )
-  throw err;
-
+  throw _.errLog( err );
   console.log( provider );
 });

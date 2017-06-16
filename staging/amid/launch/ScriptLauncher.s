@@ -18,6 +18,8 @@ if( typeof module !== 'undefined' )
   require( './aprovider/Firefox.ss' );
 }
 
+//
+
 var _ = wTools;
 var Parent = null;
 var Self = function wScriptLauncher( o )
@@ -40,7 +42,6 @@ function init( o )
 
   _.instanceInit( self );
 
-  // if( self.Self === Self )
   Object.preventExtensions( self );
 
   if( o )
@@ -52,7 +53,8 @@ function init( o )
 function launch()
 {
   var self = this;
-  self._startServer();
+  self._serverStart();
+
   self.done.got( function ( err )
   {
     if( err )
@@ -74,7 +76,7 @@ function launch()
 
 //
 
-function _startServer( )
+function _serverStart( )
 {
   var self = this;
 
@@ -145,7 +147,7 @@ var Proto =
 
   launch : launch,
 
-  _startServer : _startServer,
+  _serverStart : _serverStart,
 
   //
 
@@ -168,11 +170,10 @@ _.protoMake
 
 wCopyable.mixin( Self );
 
+//
+
 if( typeof module !== 'undefined' )
 module[ 'exports' ] = Self;
-
 _global_[ Self.name ] = wTools[ Self.nameShort ] = Self;
-
-return Self;
 
 })();

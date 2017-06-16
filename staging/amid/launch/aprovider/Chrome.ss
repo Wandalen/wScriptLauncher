@@ -1,4 +1,4 @@
-( function _PlatformProviderChrome_ss_() {
+( function _Chrome_ss_() {
 
 'use strict';
 
@@ -93,21 +93,16 @@ _.PlatformProvider.AdvancedMixin.mixin( Self );
 
 //
 
-
-_.PlatformProvider = _.PlatformProvider || {};
+if( typeof module !== 'undefined' )
+module[ 'exports' ] = Self;
 _.PlatformProvider.Chrome = Self;
-
 
 if( typeof module !== 'undefined' )
 if( !_.PlatformProvider.Default )
 {
   _.PlatformProvider.Default = Self;
-  _.platformProvider = new Self();
-}
-
-if( typeof module !== 'undefined' )
-{
-  module[ 'exports' ] = Self;
+  // no need to make an instance implicitly
+  // _.platformProvider = new Self();
 }
 
 })();

@@ -1,4 +1,4 @@
-( function _PlatformProviderMixin_s_() {
+( function _AdvancedMixin_s_() {
 
 'use strict';
 
