@@ -4,6 +4,5 @@ wScriptLauncher provides simple way to run script file inside chosen browser and
 
 ## Installation
 ```terminal
-npm install --global chrome-headless-launcher
 npm install wscriptlauncher
 ```

@@ -30,8 +30,7 @@
     "wFiles": "",
     "socket.io": "",
     "express": "",
-    "browser-run": "",
-    "browserify": ""
+    "lighthouse": ""
   },
   "devDependencies": {
     "wTesting": ""

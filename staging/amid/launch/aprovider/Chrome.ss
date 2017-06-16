@@ -6,6 +6,7 @@ if( typeof module !== 'undefined' )
 {
   if( !wTools.PlatformProvider.Abstract )
   require( './PlatformProviderAbstract.s' );
+  var chromeLauncher = require( 'lighthouse/chrome-launcher' );
 }
 
 var _ = wTools;
@@ -36,7 +37,26 @@ function init( o )
 function runAct()
 {
   var self = this;
-  return _.shell('chrome-headless ' + self.url );
+
+  var con = new wConsequence();
+
+  var flags = [];
+
+  if( self.headless )
+  flags.push( '--headless', '--disable-gpu' );
+
+  chromeLauncher.launch
+  ({
+    startingUrl: self.url,
+    chromeFlags: flags
+  })
+  .then( function( chrome )
+  {
+    console.log( `Chrome debugging port running on ${chrome.port}` );
+    con.give();
+  });
+
+  return con;
 }
 
 // --
