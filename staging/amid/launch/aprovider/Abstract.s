@@ -1,4 +1,4 @@
-( function _PlatformProviderAbstract_s_() {
+( function _Abstract_s_() {
 
 'use strict';
 
@@ -10,7 +10,6 @@ if( typeof module !== 'undefined' )
 
 var _ = wTools;
 var Parent = null;
-
 var Self = function wPlatformProviderAbstract( o )
 {
   if( !( this instanceof Self ) )
@@ -29,7 +28,6 @@ function init( o )
 
   _.instanceInit( self );
 
-  if( self.Self === Self )
   Object.preventExtensions( self );
 
   if( o )
@@ -111,7 +109,7 @@ wCopyable.mixin( Self );
 
 //
 
-_.PlatformProvider = _.PlatformProvider || {};
+_.PlatformProvider = _.PlatformProvider || Object.create( null );
 _.PlatformProvider.Abstract = Self;
 
 if( typeof module !== 'undefined' )

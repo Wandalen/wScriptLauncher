@@ -18,6 +18,8 @@ if( typeof module !== 'undefined' )
   require( './aprovider/Firefox.ss' );
 }
 
+//
+
 var _ = wTools;
 var Parent = null;
 var Self = function wScriptLauncher( o )
@@ -40,7 +42,6 @@ function init( o )
 
   _.instanceInit( self );
 
-  // if( self.Self === Self )
   Object.preventExtensions( self );
 
   if( o )
@@ -52,8 +53,9 @@ function init( o )
 function launch()
 {
   var self = this;
-  self._startServer();
-  self.done.got( function ( err )
+  self._serverStart();
+
+  self.launchDone.got( function ( err )
   {
     if( err )
     throw _.err( err );
@@ -65,16 +67,16 @@ function launch()
       if( err )
       throw _.err( err );
 
-      self.done.give( provider )
+      self.launchDone.give( provider )
     })
   });
 
-  return self.done;
+  return self.launchDone;
 }
 
 //
 
-function _startServer( )
+function _serverStart( )
 {
   var self = this;
 
@@ -106,7 +108,7 @@ function _startServer( )
   server.listen( port, function ()
   {
     console.log( 'Server started on port ', port );
-    self.done.give();
+    self.launchDone.give();
   });
 }
 
@@ -117,7 +119,7 @@ function _startServer( )
 var Composes =
 {
   providerOptions : null,
-  done : new wConsequence()
+  launchDone : new wConsequence()
 }
 
 var Aggregates =
@@ -145,7 +147,7 @@ var Proto =
 
   launch : launch,
 
-  _startServer : _startServer,
+  _serverStart : _serverStart,
 
   //
 
@@ -168,11 +170,10 @@ _.protoMake
 
 wCopyable.mixin( Self );
 
+//
+
 if( typeof module !== 'undefined' )
 module[ 'exports' ] = Self;
-
 _global_[ Self.name ] = wTools[ Self.nameShort ] = Self;
-
-return Self;
 
 })();
