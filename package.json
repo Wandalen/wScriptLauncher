@@ -30,6 +30,7 @@
     "wFiles": "",
     "socket.io": "",
     "express": "",
+    "pug": "",
     "lighthouse": ""
   },
   "devDependencies": {

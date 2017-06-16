@@ -16,6 +16,8 @@ if( typeof module !== 'undefined' )
   require( './aprovider/AdvancedMixin.s' );
   require( './aprovider/Chrome.ss' );
   require( './aprovider/Firefox.ss' );
+
+  var pug = require( 'pug' );
 }
 
 //
@@ -44,8 +46,11 @@ function init( o )
 
   Object.preventExtensions( self );
 
+  _.assert( o.filePath, 'wScriptLauncher expects mandatory option filePath' )
+
   if( o )
   self.copy( o );
+
 }
 
 //
@@ -53,22 +58,64 @@ function init( o )
 function launch()
 {
   var self = this;
-  self._serverStart();
 
-  self.launchDone.got( function ( err )
+  self.launchDone.give()
+  .seal( self )
+  .ifNoErrorThen( self._scriptPrepare )
+  .ifNoErrorThen( self._serverLaunch )
+  .ifNoErrorThen( self._browserLaunch )
+  .ifNoErrorThen( () => self._provider );
+
+  return self.launchDone;
+}
+
+//
+
+function _serverLaunch( )
+{
+  var self = this;
+
+  var rootDir = _.pathDir( _.pathRealMainDir() );
+
+  var express = require( 'express' );
+  var app = express();
+  var server = require( 'http' ).createServer( app );
+  var io = require( 'socket.io' )(server);
+
+  app.set("view engine", "pug");
+  app.set("views", _.pathJoin( __dirname, 'template' ));
+  app.use( express.static( rootDir ) );
+
+  app.get('/', function (req, res)
   {
-    if( err )
-    throw _.err( err );
+    res.render( 'base', { script : self._script } );
+  });
 
-    var provider = _.PlatformProvider.Chrome( self.providerOptions );
-    provider.run()
-    .got( function ( err )
+  app.get('/launcher/*', function ( req, res )
+  {
+    res.sendFile( _.pathJoin( rootDir, req.params[ 0 ] ) );
+  });
+
+  io.on( 'connection', function( client )
+  {
+    client.on( 'join', function()
     {
-      if( err )
-      throw _.err( err );
+      if( self.verbosity >= 3 )
+      console.log( 'wLoggerToServer connected' );
 
-      self.launchDone.give( provider )
-    })
+      client.on ( 'log', function ( msg )
+      {
+        if( self.verbosity >= 1 )
+        logger.log( msg );
+      });
+    });
+  });
+
+  server.listen( self.serverPort, function ()
+  {
+    if( self.verbosity >= 3 )
+    console.log( 'Server started on port ', self.serverPort );
+    self.launchDone.give();
   });
 
   return self.launchDone;
@@ -76,40 +123,38 @@ function launch()
 
 //
 
-function _serverStart( )
+function _scriptPrepare()
 {
   var self = this;
 
-  var express = require( 'express' );
-  var app = express();
-  var server = require( 'http' ).createServer( app );
-  var io = require( 'socket.io' )(server);
-  var port = 3000;
-
-  app.use( express.static( '.' ) );
-
-  app.get('/', function (req, res)
+  try
   {
-    res.sendFile( _.pathResolve( './sample/Sample1.html' ));
-  });
-
-  io.on( 'connection', function( client )
-  {
-    client.on( 'join', function()
-    {
-      console.log( 'connected' );
-      client.on ('log', function ( msg )
-      {
-        logger.log( msg );
-      });
-    });
-  });
-
-  server.listen( port, function ()
-  {
-    console.log( 'Server started on port ', port );
+    var code = _.fileProvider.fileRead( self.filePath );
+    self._script = _.routineMake({ code : code, prependingReturn : 0 });
     self.launchDone.give();
-  });
+  }
+  catch ( err )
+  {
+    self.launchDone.error( err );
+  }
+
+  return self.launchDone;
+}
+
+//
+
+function _browserLaunch()
+{
+  var self = this;
+  var providerOptions =
+  {
+    url : `http://localhost:${self.serverPort}`,
+    headless : self.headless,
+    verbosity : self.verbosity
+  }
+
+  self._provider = _.PlatformProvider.Chrome( providerOptions );
+  return self._provider.run();
 }
 
 // --
@@ -118,7 +163,9 @@ function _serverStart( )
 
 var Composes =
 {
-  providerOptions : null,
+  filePath : null,
+  headless : true,
+  verbosity : 1
 }
 
 var Aggregates =
@@ -131,7 +178,11 @@ var Associates =
 
 var Restricts =
 {
-  launchDone : new wConsequence()
+  launchDone : new wConsequence(),
+  serverPort : 3000,
+
+  _script : null,
+  _provider : null,
 }
 
 // --
@@ -147,7 +198,10 @@ var Proto =
 
   launch : launch,
 
-  _serverStart : _serverStart,
+  _serverLaunch : _serverLaunch,
+  _scriptPrepare : _scriptPrepare,
+  _browserLaunch : _browserLaunch,
+
 
   //
 

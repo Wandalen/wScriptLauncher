@@ -52,6 +52,7 @@ function runAct()
   })
   .then( function( chrome )
   {
+    if( self.verbosity >= 3 )
     console.log( `Chrome debugging port running on ${chrome.port}` );
     con.give();
   });
