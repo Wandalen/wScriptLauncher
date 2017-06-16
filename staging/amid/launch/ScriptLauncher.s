@@ -119,7 +119,6 @@ function _serverStart( )
 var Composes =
 {
   providerOptions : null,
-  launchDone : new wConsequence()
 }
 
 var Aggregates =
@@ -132,6 +131,7 @@ var Associates =
 
 var Restricts =
 {
+  launchDone : new wConsequence()
 }
 
 // --
