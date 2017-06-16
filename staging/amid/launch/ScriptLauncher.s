@@ -153,8 +153,20 @@ function _browserLaunch()
     verbosity : self.verbosity
   }
 
-  self._provider = _.PlatformProvider.Chrome( providerOptions );
+  var provider = browsersMap[ self.browser ];
+  if( provider === undefined )
+  return self.launchDone.error( 'Requested browser is not supported.' );
+  self._provider = provider( providerOptions );
   return self._provider.run();
+}
+
+//
+
+
+var browsersMap =
+{
+  'firefox' : _.PlatformProvider.Firefox,
+  'chrome' : _.PlatformProvider.Chrome
 }
 
 // --
@@ -164,6 +176,7 @@ function _browserLaunch()
 var Composes =
 {
   filePath : null,
+  browser : 'chrome',
   headless : true,
   verbosity : 1
 }
