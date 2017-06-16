@@ -31,6 +31,14 @@ function init( o )
   Parent.prototype.init.call( self,o );
 }
 
+//
+
+function runAct()
+{
+  var self = this;
+  return _.shell('chrome-headless ' + self.url );
+}
+
 // --
 // relationship
 // --
@@ -59,6 +67,8 @@ var Proto =
 {
 
   init : init,
+
+  runAct : runAct,
 
   //
 

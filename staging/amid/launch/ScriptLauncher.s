@@ -12,10 +12,10 @@ if( typeof module !== 'undefined' )
   wTools.include( 'wConsequence' );
   wTools.include( 'wCopyable' );
 
-  require( './aprovider/PlatformProviderAbstract.s' );
-  require( './aprovider/PlatformProviderMixin.s' );
-  require( './aprovider/PlatformProviderChrome.ss' );
-  require( './aprovider/PlatformProviderFirefox.ss' );
+  require( './aprovider/Abstract.s' );
+  require( './aprovider/AdvancedMixin.s' );
+  require( './aprovider/Chrome.ss' );
+  require( './aprovider/Firefox.ss' );
 }
 
 var _ = wTools;
@@ -58,7 +58,7 @@ function launch()
     if( err )
     throw _.err( err );
 
-    var provider = _.PlatformProvider.Firefox( self.providerOptions );
+    var provider = _.PlatformProvider.Chrome( self.providerOptions );
     provider.run()
     .got( function ( err )
     {
