@@ -9,7 +9,7 @@ var _ = wTools;
 
 var launcher = wScriptLauncher
 ({
-  providerOptions : { url : 'http://localhost:3000' }
+  providerOptions : { url : 'http://localhost:3000', headless : false }
 });
 
 launcher.launch()

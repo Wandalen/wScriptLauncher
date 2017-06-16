@@ -52,7 +52,8 @@ function run()
 
 var Composes =
 {
-  url : null
+  url : null,
+  headless : true
 }
 
 var Aggregates =
