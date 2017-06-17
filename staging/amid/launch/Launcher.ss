@@ -17,8 +17,10 @@ if( typeof module !== "undefined" )
   });
 
   launcher.launch()
-  .ifErrorThen( function ( err )
+  .got( function ( err,got )
   {
+    if( err )
     throw _.errLog( err );
+    console.log( got );
   });
 }

@@ -34,7 +34,8 @@
     "socket.io": "",
     "express": "",
     "pug": "",
-    "lighthouse": ""
+    "lighthouse": "",
+    "electron": ""
   },
   "devDependencies": {
     "wTesting": ""

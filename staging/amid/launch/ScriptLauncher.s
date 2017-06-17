@@ -16,6 +16,7 @@ if( typeof module !== 'undefined' )
   require( './aprovider/AdvancedMixin.s' );
   require( './aprovider/Chrome.ss' );
   require( './aprovider/Firefox.ss' );
+  require( './aprovider/Electron.ss' );
 
   var pug = require( 'pug' );
 }
@@ -74,17 +75,18 @@ function launch()
 function _serverLaunch( )
 {
   var self = this;
+  var con = new wConsequence();
   var rootDir = _.pathResolve( __dirname, '../../../' );
   var express = require( 'express' );
   var app = express();
   var server = require( 'http' ).createServer( app );
   var io = require( 'socket.io' )(server);
 
-  app.set("view engine", "pug");
-  app.set("views", _.pathJoin( __dirname, 'template' ));
+  app.set( "view engine", "pug" );
+  app.set( "views", _.pathJoin( __dirname, 'template' ));
   app.use( express.static( rootDir ) );
 
-  app.get('/', function (req, res)
+  app.get( '/', function ( req, res )
   {
     res.render( 'base', { script : self._script } );
   });
@@ -113,10 +115,10 @@ function _serverLaunch( )
   {
     if( self.verbosity >= 3 )
     console.log( 'Server started on port ', self.serverPort );
-    self.launchDone.give();
+    con.give();
   });
 
-  return self.launchDone;
+  return con;
 }
 
 //
@@ -124,19 +126,20 @@ function _serverLaunch( )
 function _scriptPrepare()
 {
   var self = this;
+  var con = new wConsequence();
 
   try
   {
     var code = _.fileProvider.fileRead( self.filePath );
     self._script = _.routineMake({ code : code, prependingReturn : 0 });
-    self.launchDone.give();
+    con.give();
   }
   catch ( err )
   {
-    self.launchDone.error( err );
+    con.error( err );
   }
 
-  return self.launchDone;
+  return con;
 }
 
 //
@@ -164,7 +167,8 @@ function _browserLaunch()
 var browsersMap =
 {
   'firefox' : _.PlatformProvider.Firefox,
-  'chrome' : _.PlatformProvider.Chrome
+  'chrome' : _.PlatformProvider.Chrome,
+  'electron' : _.PlatformProvider.Electron
 }
 
 // --
