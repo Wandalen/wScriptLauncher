@@ -74,7 +74,7 @@ function launch()
 function _serverLaunch( )
 {
   var self = this;
-  var rootDir = _.pathResolve( _.pathEffectiveMainDir(), '../../../' );
+  var rootDir = _.pathResolve( __dirname, '../../../' );
   var express = require( 'express' );
   var app = express();
   var server = require( 'http' ).createServer( app );
