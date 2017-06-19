@@ -47,7 +47,7 @@ function init( o )
 
   Object.preventExtensions( self );
 
-  _.assert( o.filePath, 'wScriptLauncher expects mandatory option filePath' )
+  // _.assert( o.filePath, 'wScriptLauncher expects mandatory option filePath' )
 
   if( o )
   self.copy( o );
@@ -128,15 +128,23 @@ function _scriptPrepare()
   var self = this;
   var con = new wConsequence();
 
-  try
+  if( !self.filePath )
   {
-    var code = _.fileProvider.fileRead( self.filePath );
-    self._script = _.routineMake({ code : code, prependingReturn : 0 });
+    self._script = function(){ logger.log( wScriptLauncher.generateHelp() ) };
     con.give();
   }
-  catch ( err )
+  else
   {
-    con.error( err );
+    try
+    {
+      var code = _.fileProvider.fileRead( self.filePath );
+      self._script = _.routineMake({ code : code, prependingReturn : 0 });
+      con.give();
+    }
+    catch ( err )
+    {
+      con.error( err );
+    }
   }
 
   return con;
@@ -163,12 +171,47 @@ function _browserLaunch()
 
 //
 
-
 var platformsMap =
 {
   'firefox' : _.PlatformProvider.Firefox,
   'chrome' : _.PlatformProvider.Chrome,
   'electron' : _.PlatformProvider.Electron
+}
+
+//
+
+function generateHelp()
+{
+  var help =
+  {
+    'wScriptLauncher' : ' ',
+    Usage :
+    [
+      'launcher [ path ]', 'launcher [ options ]',
+      'Launcher expects path to script file as single argument or as option'
+    ],
+    Examples :
+    [
+      'launcher path/to/script.js',
+      'launcher filePath : path/to/script.js platform : firefox headless : 0'
+    ],
+    Options :
+    {
+      filePath : "Path to script file",
+      platform : "Target platform, that executes script file. Possible values : " + _.mapOwnKeys( platformsMap ).join(),
+      headless : "Run without window. Possible values : 1/0",
+    }
+  }
+
+  var o =
+  {
+    levels : 3,
+    wrap : 0,
+    stringWrapper : '',
+    multiline : 1
+  };
+
+  return _.toStr( help, o );
 }
 
 // --
@@ -200,6 +243,11 @@ var Restricts =
   _provider : null,
 }
 
+var Statics  =
+{
+  generateHelp : generateHelp
+}
+
 // --
 // prototype
 // --
@@ -225,6 +273,7 @@ var Proto =
   Aggregates : Aggregates,
   Associates : Associates,
   Restricts : Restricts,
+  Statics : Statics,
 
 }
 
@@ -251,11 +300,22 @@ if( typeof module !== "undefined" && require.main === module )
 {
   var args = _.appArgs();
 
+  if( !args.scriptArgs.length )
+  {
+    return logger.log( wScriptLauncher.generateHelp() );
+  }
+  else if( !args.map )
+  {
+    args.map = { filePath : args.scriptArgs[ 0 ] }
+  }
+
+  args = args.map || {};
+
   var launcher = wScriptLauncher
   ({
-    headless : args.map.headless,
-    filePath : args.map.filePath,
-    platform : args.map.platform
+    headless : args.headless,
+    filePath : args.filePath,
+    platform : args.platform
   });
 
   launcher.launch()
