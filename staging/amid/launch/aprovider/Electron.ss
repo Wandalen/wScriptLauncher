@@ -1,4 +1,4 @@
-( function _Chrome_ss_() {
+( function _Electron_ss_() {
 
 'use strict';
 
@@ -6,7 +6,6 @@ if( typeof module !== 'undefined' )
 {
   if( !wTools.PlatformProvider.Abstract )
   require( './PlatformProviderAbstract.s' );
-  var chromeLauncher = require( 'lighthouse/chrome-launcher' );
 }
 
 var _ = wTools;
@@ -14,7 +13,7 @@ var _ = wTools;
 //
 
 var Parent = _.PlatformProvider.Abstract;
-var Self = function wPlatformProviderChrome( o )
+var Self = function wPlatformProviderElectron( o )
 {
   if( !( this instanceof Self ) )
   if( o instanceof Self )
@@ -38,22 +37,21 @@ function runAct()
 {
   var self = this;
 
-  var con = new wConsequence();
-
-  var flags = [];
-
-  if( self.headless )
-  flags.push( '--headless', '--disable-gpu' );
-
-  chromeLauncher.launch
-  ({
-    startingUrl: self.url,
-    chromeFlags: flags
-  })
-  .then( function( chrome )
+  var electron = require( 'electron' );
+  var o =
   {
-    if( self.verbosity >= 3 )
-    console.log( `Chrome debugging port running on ${chrome.port}` );
+    mode : 'shell',
+    stdio : [ null, null, null, 'ipc' ],
+    code : electron + ' ' +  _.pathJoin( __dirname, 'ElectronLauncher.ss' ),
+    outputPiping : 0,
+    verbosity : 0,
+  }
+
+  //!!! _.shell: Consequence gives message on o.child close event?
+  var con = _.shell( o );
+  o.child.on( 'message', function( msg )
+  {
+    if( msg === 'ready' )
     con.give();
   });
 
@@ -98,7 +96,6 @@ var Proto =
   Aggregates : Aggregates,
   Associates : Associates,
   Restricts : Restricts,
-
 }
 
 //
@@ -116,7 +113,7 @@ _.PlatformProvider.AdvancedMixin.mixin( Self );
 
 if( typeof module !== 'undefined' )
 module[ 'exports' ] = Self;
-_.PlatformProvider.Chrome = Self;
+_.PlatformProvider.Electron = Self;
 
 if( typeof module !== 'undefined' )
 if( !_.PlatformProvider.Default )

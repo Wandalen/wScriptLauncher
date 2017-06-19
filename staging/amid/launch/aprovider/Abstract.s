@@ -43,6 +43,7 @@ function init( o )
 function run()
 {
   var self = this;
+
   return self.runAct();
 }
 
@@ -53,7 +54,8 @@ function run()
 var Composes =
 {
   url : null,
-  headless : true
+  headless : true,
+  verbosity : 1
 }
 
 var Aggregates =

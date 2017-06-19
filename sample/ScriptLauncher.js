@@ -7,9 +7,12 @@ var _ = wTools;
 
 /**/
 
+var args = _.appArgs();
+
 var launcher = wScriptLauncher
 ({
-  providerOptions : { url : 'http://localhost:3000', headless : false }
+  headless : false,
+  filePath : args.map.filePath
 });
 
 launcher.launch()
@@ -17,5 +20,6 @@ launcher.launch()
 {
   if( err )
   throw _.errLog( err );
+
   console.log( provider );
 });

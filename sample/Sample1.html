@@ -26,17 +26,18 @@
     <script src="../node_modules/wLogger/staging/abase/printer/PrinterTop.s"></script>
     <script src="../node_modules/wLogger/staging/abase/printer/printer/Logger.s"></script>
     <script src="../node_modules/socket.io-client/dist/socket.io.js"></script>
-    <script src="../node_modules/wLoggerToServer/staging/abase/printer/printer/ToServer.s"></script>
+    <script src="../node_modules/wloggertoserver/staging/abase/printer/printer/ToServer.s"></script>
     <script>
     var _ = wTools;
     _.io = io;
     wLogger.rawOutput = true;
     var l = new wLoggerToServer();
-    wLogger.consoleBar
-    ({
-      outputLogger : l,
-      bar : 1
-    });
+    // wLogger.consoleBar
+    // ({
+    //   outputLogger : l,
+    //   bar : 1
+    // });
+    l.inputFrom( console );
     l.connect()
     .doThen( function ()
     {

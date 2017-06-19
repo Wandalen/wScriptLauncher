@@ -1,3 +1,3 @@
 console.log( 'Hello World!' );
-console.log( 'document',windows.document );
-window.close();
+console.log( 'document',window.document );
+// window.close();
