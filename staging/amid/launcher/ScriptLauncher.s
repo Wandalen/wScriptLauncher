@@ -255,7 +255,7 @@ if( typeof module !== "undefined" && require.main === module )
   ({
     headless : args.map.headless,
     filePath : args.map.filePath,
-    platform : args.map.browser
+    platform : args.map.platform
   });
 
   launcher.launch()
