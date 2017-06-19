@@ -154,7 +154,7 @@ function _browserLaunch()
     verbosity : self.verbosity
   }
 
-  var provider = browsersMap[ self.browser ];
+  var provider = platformsMap[ self.platform ];
   if( provider === undefined )
   return self.launchDone.error( 'Requested browser is not supported.' );
   self._provider = provider( providerOptions );
@@ -164,7 +164,7 @@ function _browserLaunch()
 //
 
 
-var browsersMap =
+var platformsMap =
 {
   'firefox' : _.PlatformProvider.Firefox,
   'chrome' : _.PlatformProvider.Chrome,
@@ -178,7 +178,7 @@ var browsersMap =
 var Composes =
 {
   filePath : null,
-  browser : 'chrome',
+  platform : 'chrome',
   headless : true,
   verbosity : 1
 }
@@ -244,5 +244,27 @@ wCopyable.mixin( Self );
 if( typeof module !== 'undefined' )
 module[ 'exports' ] = Self;
 _global_[ Self.name ] = wTools[ Self.nameShort ] = Self;
+
+//
+
+if( typeof module !== "undefined" && require.main === module )
+{
+  var args = _.appArgs();
+
+  var launcher = wScriptLauncher
+  ({
+    headless : args.map.headless,
+    filePath : args.map.filePath,
+    platform : args.map.browser
+  });
+
+  launcher.launch()
+  .got( function ( err,got )
+  {
+    if( err )
+    throw _.errLog( err );
+    console.log( got );
+  });
+}
 
 })();

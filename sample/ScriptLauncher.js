@@ -1,6 +1,6 @@
 if( typeof module !== 'undefined' )
 {
-  require( '../staging/amid/launch/ScriptLauncher.s' );
+  require( '../staging/amid/launcher/ScriptLauncher.s' );
 }
 
 var _ = wTools;
@@ -12,7 +12,7 @@ var args = _.appArgs();
 var launcher = wScriptLauncher
 ({
   headless : false,
-  filePath : args.map.filePath
+  filePath : _.pathResolve( __dirname, './helloworld.js' )
 });
 
 launcher.launch()
