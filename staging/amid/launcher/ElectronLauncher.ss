@@ -17,16 +17,16 @@ var BrowserWindow = electron.BrowserWindow;
 var args = _.appArgs().map;
 var window;
 
-module = null;
-
 if( args == undefined )
 args = {};
 
 if( args.headless === undefined )
 args.headless = false;
 
-if( args.url === undefined )
-args.url = 'http://127.0.0.1:3000';
+if( args.port === undefined )
+args.port = 3000;
+
+args.url = 'http://127.0.0.1:' + args.port;
 
 function windowInit( )
 {

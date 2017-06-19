@@ -38,11 +38,17 @@ function runAct()
   var self = this;
 
   var electron = require( 'electron' );
+
+  var launcherPath  = _.pathResolve( __dirname, '../ElectronLauncher.ss' );
+
+  var port = _.urlParse( self.url ).port;
+  var args = `headless : ${self.headless} port : ${port}`;
+
   var o =
   {
     mode : 'shell',
     stdio : [ null, null, null, 'ipc' ],
-    code : electron + ' ' +  _.pathJoin( __dirname, 'ElectronLauncher.ss' ),
+    code : electron + ' ' + launcherPath + ' ' + args,
     outputPiping : 0,
     verbosity : 0,
   }
