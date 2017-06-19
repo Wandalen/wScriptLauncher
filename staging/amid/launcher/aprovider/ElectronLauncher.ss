@@ -17,8 +17,6 @@ var BrowserWindow = electron.BrowserWindow;
 var args = _.appArgs().map;
 var window;
 
-module = null;
-
 if( args == undefined )
 args = {};
 
