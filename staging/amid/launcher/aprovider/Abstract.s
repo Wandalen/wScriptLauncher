@@ -47,6 +47,14 @@ function run()
   return self.runAct();
 }
 
+//
+
+function terminate()
+{
+  var self = this;
+  return self.terminateAct();
+}
+
 // --
 // relationship
 // --
@@ -68,6 +76,7 @@ var Associates =
 
 var Restricts =
 {
+  _process : null
 }
 
 var Statics =
@@ -86,6 +95,7 @@ var Proto =
   //
 
   run : run,
+  terminate : terminate,
 
   // relationships
 

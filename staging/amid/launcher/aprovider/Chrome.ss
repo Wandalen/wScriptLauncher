@@ -52,6 +52,7 @@ function runAct()
   })
   .then( function( chrome )
   {
+    self._process = chrome;
     if( self.verbosity >= 3 )
     console.log( `Chrome debugging port running on ${chrome.port}` );
     con.give();
@@ -60,6 +61,32 @@ function runAct()
   {
     con.error( err );
   })
+
+  return con;
+}
+
+//
+
+function terminateAct()
+{
+  var self = this;
+
+  var con = new wConsequence();
+
+  if( !self._process )
+  con.error( _.err( "Process is not running" ) ); 
+  else
+  {
+    self._process.kill()
+    .then( function()
+    {
+      con.give();
+    })
+    .catch( function ( err )
+    {
+      con.error( err );
+    });
+  }
 
   return con;
 }
@@ -94,6 +121,7 @@ var Proto =
   init : init,
 
   runAct : runAct,
+  terminateAct : terminateAct,
 
   //
 

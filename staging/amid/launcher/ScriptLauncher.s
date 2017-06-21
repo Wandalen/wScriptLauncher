@@ -52,6 +52,9 @@ function init( o )
   if( o )
   self.copy( o );
 
+  if( self.terminatingAfter === null )
+  self.terminatingAfter = self.headless;
+
 }
 
 //
@@ -72,6 +75,22 @@ function launch()
 
 //
 
+function terminate()
+{
+  var self = this;
+
+  if( !self.terminatingAfter )
+  return;
+
+  if( self._provider )
+  self._provider.terminate();
+
+  if( self.server && self.server.isRunning )
+  self.server.io.close( () => self.server.close() );
+}
+
+//
+
 function _serverLaunch( )
 {
   var self = this;
@@ -79,8 +98,9 @@ function _serverLaunch( )
   var rootDir = _.pathResolve( __dirname, '../../../' );
   var express = require( 'express' );
   var app = express();
-  var server = require( 'http' ).createServer( app );
-  var io = require( 'socket.io' )(server);
+  self.server = require( 'http' ).createServer( app );
+  self.server.io = require( 'socket.io' )( self.server );
+  self.server.isRunning = false;
 
   app.set( "view engine", "pug" );
   app.set( "views", _.pathJoin( __dirname, 'template' ));
@@ -88,7 +108,11 @@ function _serverLaunch( )
 
   app.get( '/', function ( req, res )
   {
-    res.render( 'base', { script : self._script } );
+    res.render( 'base',
+    {
+      script : self._script,
+      port : self.serverPort
+    });
   });
 
   app.get('/launcher/*', function ( req, res )
@@ -96,25 +120,37 @@ function _serverLaunch( )
     res.sendFile( _.pathJoin( rootDir, req.params[ 0 ] ) );
   });
 
-  io.on( 'connection', function( client )
+  self.server.io.on( 'connection', function( client )
   {
     client.on( 'join', function()
     {
       if( self.verbosity >= 3 )
       console.log( 'wLoggerToServer connected' );
-
-      client.on ( 'log', function ( msg )
-      {
-        if( self.verbosity >= 1 )
-        logger.log( msg );
-      });
+      client.emit( 'ready', '' );
     });
+
+    client.on ( 'log', function ( msg )
+    {
+      if( self.verbosity >= 1 )
+      logger.log( msg );
+    });
+
+    client.on( 'thisProcessTerminate', function ()
+    {
+      self.terminate();
+    });
+
+    // client.on( 'disconnect', function ()
+    // {
+    // })
   });
 
-  server.listen( self.serverPort, function ()
+
+  self.server.listen( self.serverPort, function ()
   {
     if( self.verbosity >= 3 )
     console.log( 'Server started on port ', self.serverPort );
+    self.server.isRunning = true;
     con.give();
   });
 
@@ -223,7 +259,8 @@ var Composes =
   filePath : null,
   platform : 'chrome',
   headless : true,
-  verbosity : 1
+  verbosity : 1,
+  terminatingAfter : null
 }
 
 var Aggregates =
@@ -237,6 +274,7 @@ var Associates =
 var Restricts =
 {
   launchDone : new wConsequence(),
+  server : null,
   serverPort : 3000,
 
   _script : null,
@@ -260,6 +298,7 @@ var Proto =
   //
 
   launch : launch,
+  terminate : terminate,
 
   _serverLaunch : _serverLaunch,
   _scriptPrepare : _scriptPrepare,
@@ -315,7 +354,8 @@ if( typeof module !== "undefined" && require.main === module )
   ({
     headless : args.headless,
     filePath : args.filePath,
-    platform : args.platform
+    platform : args.platform,
+    terminatingAfter : args.terminatingAfter
   });
 
   launcher.launch()

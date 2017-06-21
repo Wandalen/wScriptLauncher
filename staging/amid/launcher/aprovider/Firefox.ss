@@ -36,7 +36,27 @@ function init( o )
 function runAct()
 {
   var self = this;
-  return _.shell('open --background --hide -a firefox --args -silent ' + self.url );
+
+  var firefoxPath = require( 'firefox-location' );
+  var profilePath = _.pathResolve( __dirname, '../../../../tmp.tmp/firefox' );
+  var options =
+  [
+    self.url,
+    '-no-remote',
+    '-profile',
+    profilePath
+  ]
+  .join( ' ' );
+
+  _.fileProvider.directoryMake( profilePath );
+
+  return _.shell
+  ({
+    mode : 'spawn',
+    code : firefoxPath + ' ' + options,
+    outputPiping : 0,
+    verbosity : 0
+  });
 }
 
 // --
