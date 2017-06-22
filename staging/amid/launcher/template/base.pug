@@ -44,13 +44,14 @@ html
             // });
             l.inputFrom( console );
             l.connect()
-            .doThen( _.routineSeal( this, script, [] ) )
+            .doThen( () => script() )
+            .doThen( () => l.disconnect() )
             .doThen( function ()
             { 
               var socket = _.io( url );
               socket.on( 'connect', function()
               {
-                socket.emit('thisProcessTerminate', '' );
+                socket.emit( 'terminate', '' );
                 socket.disconnect();
               });
             });

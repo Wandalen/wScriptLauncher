@@ -39,7 +39,7 @@ function runAct()
 
   var firefoxPath = require( 'firefox-location' );
   var profilePath = _.pathResolve( __dirname, '../../../../tmp.tmp/firefox' );
-  var options =
+  var args =
   [
     self.url,
     '-no-remote',
@@ -50,13 +50,41 @@ function runAct()
 
   _.fileProvider.directoryMake( profilePath );
 
-  return _.shell
-  ({
+  self._process =
+  {
     mode : 'spawn',
-    code : firefoxPath + ' ' + options,
+    code : firefoxPath + ' ' + args,
     outputPiping : 0,
     verbosity : 0
-  });
+  }
+
+  return _.shell( self._process );
+}
+
+//
+
+function terminateAct()
+{
+  var self = this;
+
+  var con = new wConsequence();
+
+  if( self._process.child.killed )
+  con.error( _.err( "Process is not running" ) );
+  else
+  {
+    try
+    {
+      self._process.child.kill( 'SIGINT' )
+      con.give();
+    }
+    catch( err )
+    {
+      con.error( err );
+    }
+  }
+
+  return con;
 }
 
 // --
@@ -89,6 +117,7 @@ var Proto =
   init : init,
 
   runAct : runAct,
+  terminateAct : terminateAct,
 
   //
 

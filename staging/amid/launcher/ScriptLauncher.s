@@ -79,9 +79,6 @@ function terminate()
 {
   var self = this;
 
-  if( !self.terminatingAfter )
-  return;
-
   if( self._provider )
   self._provider.terminate();
 
@@ -122,21 +119,23 @@ function _serverLaunch( )
 
   self.server.io.on( 'connection', function( client )
   {
-    client.on( 'join', function()
+    client.on( 'join', function ( msg, reply )
     {
       if( self.verbosity >= 3 )
       console.log( 'wLoggerToServer connected' );
-      client.emit( 'ready', '' );
+      reply();
     });
 
-    client.on ( 'log', function ( msg )
+    client.on ( 'log', function ( msg, reply )
     {
       if( self.verbosity >= 1 )
       logger.log( msg );
+      reply();
     });
 
-    client.on( 'thisProcessTerminate', function ()
+    client.on( 'terminate', function ()
     {
+      if( self.terminatingAfter )
       self.terminate();
     });
 
@@ -202,7 +201,10 @@ function _browserLaunch()
   if( provider === undefined )
   return self.launchDone.error( 'Requested browser is not supported.' );
   self._provider = provider( providerOptions );
-  return self._provider.run();
+  var result = self._provider.run();
+  self._provider._process.child.on( 'close', () => self.terminate() );
+
+  return result;
 }
 
 //
