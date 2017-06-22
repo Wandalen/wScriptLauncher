@@ -202,6 +202,8 @@ function _browserLaunch()
   return self.launchDone.error( 'Requested browser is not supported.' );
   self._provider = provider( providerOptions );
   var result = self._provider.run();
+
+  if( self._provider._process )
   self._provider._process.child.on( 'close', () => self.terminate() );
 
   return result;
