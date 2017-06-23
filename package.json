@@ -35,7 +35,8 @@
     "express": "",
     "pug": "",
     "lighthouse": "",
-    "electron": ""
+    "electron": "",
+    "firefox-location": ""
   },
   "devDependencies": {
     "wTesting": ""

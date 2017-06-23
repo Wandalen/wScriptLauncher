@@ -36,7 +36,55 @@ function init( o )
 function runAct()
 {
   var self = this;
-  return _.shell('open --background --hide -a firefox --args -silent ' + self.url );
+
+  var firefoxPath = require( 'firefox-location' );
+  var profilePath = _.pathResolve( __dirname, '../../../../tmp.tmp/firefox' );
+  var args =
+  [
+    self.url,
+    '-no-remote',
+    '-profile',
+    profilePath
+  ]
+  .join( ' ' );
+
+  _.fileProvider.directoryMake( profilePath );
+
+  self._process =
+  {
+    mode : 'spawn',
+    code : firefoxPath + ' ' + args,
+    outputPiping : 0,
+    verbosity : 0
+  }
+
+  return _.shell( self._process );
+}
+
+//
+
+function terminateAct()
+{
+  var self = this;
+
+  var con = new wConsequence();
+
+  if( self._process.child.killed )
+  con.error( _.err( "Process is not running" ) );
+  else
+  {
+    try
+    {
+      self._process.child.kill( 'SIGINT' )
+      con.give();
+    }
+    catch( err )
+    {
+      con.error( err );
+    }
+  }
+
+  return con;
 }
 
 // --
@@ -69,6 +117,7 @@ var Proto =
   init : init,
 
   runAct : runAct,
+  terminateAct : terminateAct,
 
   //
 

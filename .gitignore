@@ -5,6 +5,7 @@
 *.sh
 *.bat
 tmp
+tmp.tmp
 builder
 proto
 node_modules

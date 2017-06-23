@@ -32,6 +32,8 @@ html
             var _ = wTools;
             _.io = io;
             var script = #{script}
+            var port = #{port}
+            var url = 'http://localhost:' + port;
             wLogger.rawOutput = true;
             var l = new wLoggerToServer();
             l.permanentStyle = { bg : 'yellow', fg : 'black' };
@@ -42,10 +44,17 @@ html
             // });
             l.inputFrom( console );
             l.connect()
+            .doThen( () => script() )
+            .doThen( () => l.disconnect() )
             .doThen( function ()
-            {
-              script();
-              /*l.disconnect();*/
-            })
+            { 
+              var socket = _.io( url );
+              socket.on( 'connect', function()
+              {
+                socket.emit( 'terminate', '' );
+                socket.disconnect();
+              });
+            });
+            
 body
     
