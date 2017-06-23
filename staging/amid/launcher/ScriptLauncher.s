@@ -92,15 +92,15 @@ function _serverLaunch( )
 {
   var self = this;
   var con = new wConsequence();
-  var rootDir = _.pathResolve( __dirname, '../../../' );
+  var rootDir = _.pathResolve( __dirname, '../../..' );
   var express = require( 'express' );
   var app = express();
   self.server = require( 'http' ).createServer( app );
   self.server.io = require( 'socket.io' )( self.server );
   self.server.isRunning = false;
 
-  app.set( "view engine", "pug" );
-  app.set( "views", _.pathJoin( __dirname, 'template' ));
+  app.set( 'view engine', 'pug' );
+  app.set( 'views', _.pathJoin( __dirname, 'template' ));
   app.use( express.static( rootDir ) );
 
   app.get( '/', function ( req, res )
@@ -122,7 +122,7 @@ function _serverLaunch( )
     client.on( 'join', function ( msg, reply )
     {
       if( self.verbosity >= 3 )
-      console.log( 'wLoggerToServer connected' );
+      logger.log( 'wLoggerToServer connected' );
       reply();
     });
 
@@ -148,7 +148,7 @@ function _serverLaunch( )
   self.server.listen( self.serverPort, function ()
   {
     if( self.verbosity >= 3 )
-    console.log( 'Server started on port ', self.serverPort );
+    logger.log( 'Server started on port ', self.serverPort );
     self.server.isRunning = true;
     con.give();
   });
@@ -237,9 +237,9 @@ function generateHelp()
     ],
     Options :
     {
-      filePath : "Path to script file",
-      platform : "Target platform, that executes script file. Possible values : " + _.mapOwnKeys( platformsMap ).join(),
-      headless : "Run without window. Possible values : 1/0",
+      filePath : 'Path to script file',
+      platform : 'Target platform, that executes script file. Possible values : ' + _.mapOwnKeys( platformsMap ).join(),
+      headless : 'Run without window. Possible values : 1/0',
     }
   }
 
@@ -339,7 +339,7 @@ _global_[ Self.name ] = wTools[ Self.nameShort ] = Self;
 
 //
 
-if( typeof module !== "undefined" && require.main === module )
+if( typeof module !== 'undefined' && require.main === module )
 {
   var args = _.appArgs();
 
@@ -367,7 +367,7 @@ if( typeof module !== "undefined" && require.main === module )
   {
     if( err )
     throw _.errLog( err );
-    console.log( got );
+    logger.log( got );
   });
 }
 

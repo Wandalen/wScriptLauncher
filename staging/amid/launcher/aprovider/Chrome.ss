@@ -54,7 +54,7 @@ function runAct()
   {
     self._process = chrome;
     if( self.verbosity >= 3 )
-    console.log( `Chrome debugging port running on ${chrome.port}` );
+    logger.log( `Chrome debugging port running on ${chrome.port}` );
     con.give();
   })
   .catch( function ( err )
@@ -74,7 +74,7 @@ function terminateAct()
   var con = new wConsequence();
 
   if( !self._process )
-  con.error( _.err( "Process is not running" ) ); 
+  con.error( _.err( "Process is not running" ) );
   else
   {
     self._process.kill()
