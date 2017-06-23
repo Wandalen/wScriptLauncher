@@ -132,28 +132,30 @@ function _serverLaunch( )
   var self = this;
   var con = new wConsequence();
   var rootDir = _.pathResolve( __dirname, '../../..' );
+  var script = _.fileProvider.fileRead( self.filePath );
   var express = require( 'express' );
   var app = express();
   self.server = require( 'http' ).createServer( app );
   self.server.io = require( 'socket.io' )( self.server );
-  self.server.isRunning = false;
 
-  app.set( 'view engine', 'pug' );
-  app.set( 'views', _.pathJoin( __dirname, 'template' ));
-  app.use( express.static( rootDir ) );
+  var statics = _.pathJoin( rootDir, 'staging/amid/launcher/static' );
+  var modules = _.pathJoin( rootDir, 'node_modules' );
+
+  app.use('/modules', express.static( modules ));
+  app.use('/static', express.static( statics ));
 
   app.get( '/', function ( req, res )
   {
-    res.render( 'base',
-    {
-      script : self._script,
-      port : self.serverPort
-    });
+    res.sendFile( _.pathJoin( statics, 'index.html' ) );
   });
-
-  app.get('/launcher/*', function ( req, res )
+  app.get( '/script', function ( req, res )
   {
-    res.sendFile( _.pathJoin( rootDir, req.params[ 0 ] ) );
+    res.send( script );
+  });
+  app.get( '/terminate', function ( req, res )
+  {
+    if( self.terminatingAfter )
+    self.terminate();
   });
 
   self.server.io.on( 'connection', function( client )
@@ -172,11 +174,11 @@ function _serverLaunch( )
       reply();
     });
 
-    client.on( 'terminate', function ()
-    {
-      if( self.terminatingAfter )
-      self.terminate();
-    });
+    // client.on( 'terminate', function ()
+    // {
+    //   if( self.terminatingAfter )
+    //   self.terminate();
+    // });
 
     // client.on( 'disconnect', function ()
     // {
