@@ -148,10 +148,6 @@ _.PlatformProvider.Firefox = Self;
 
 if( typeof module !== 'undefined' )
 if( !_.PlatformProvider.Default )
-{
-  _.PlatformProvider.Default = Self;
-  // no need to make an instance implicitly
-  // _.platformProvider = new Self();
-}
+_.PlatformProvider.Default = Self;
 
 })();

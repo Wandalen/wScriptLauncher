@@ -282,7 +282,7 @@ function helpGet()
     }
   }
 
-  var o =
+  var strOptions =
   {
     levels : 3,
     wrap : 0,
@@ -290,7 +290,7 @@ function helpGet()
     multiline : 1
   };
 
-  return _.toStr( help, o );
+  return _.toStr( help, strOptions );
 }
 
 // --
