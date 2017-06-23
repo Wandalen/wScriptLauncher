@@ -59,6 +59,36 @@ function init( o )
 
 //
 
+function argsApply()
+{
+  var self = this;
+  var args = _.appArgs();
+
+  _.assert( arguments.length === 0 );
+
+  args.map.filePath = args.map.filePath || args.subject;
+
+  if( !args.scriptArgs.length )
+  {
+    logger.log( Self.helpGet() );
+    return self;
+  }
+
+  args = args.map;
+
+  self.copy
+  ({
+    headless : args.headless,
+    filePath : args.filePath,
+    platform : args.platform,
+    terminatingAfter : args.terminatingAfter
+  });
+
+  return self;
+}
+
+//
+
 function launch()
 {
   var self = this;
@@ -69,6 +99,15 @@ function launch()
   .ifNoErrorThen( self._serverLaunch )
   .ifNoErrorThen( self._browserLaunch )
   .ifNoErrorThen( () => self._provider );
+
+  if( self.handlingFeedback )
+  self.launchDone
+  .got( function ( err,got )
+  {
+    if( err )
+    throw _.errLog( err );
+    logger.log( got );
+  });
 
   return self.launchDone;
 }
@@ -165,7 +204,7 @@ function _scriptPrepare()
 
   if( !self.filePath )
   {
-    self._script = function(){ logger.log( wScriptLauncher.generateHelp() ) };
+    self._script = function(){ logger.log( wScriptLauncher.helpGet() ) };
     con.give();
   }
   else
@@ -220,7 +259,7 @@ var platformsMap =
 
 //
 
-function generateHelp()
+function helpGet()
 {
   var help =
   {
@@ -264,6 +303,7 @@ var Composes =
   platform : 'chrome',
   headless : true,
   verbosity : 1,
+  handlingFeedback : 1,
   terminatingAfter : null
 }
 
@@ -287,7 +327,7 @@ var Restricts =
 
 var Statics  =
 {
-  generateHelp : generateHelp
+  helpGet : helpGet
 }
 
 // --
@@ -298,6 +338,7 @@ var Proto =
 {
 
   init : init,
+  argsApply : argsApply,
 
   //
 
@@ -341,34 +382,44 @@ _global_[ Self.name ] = wTools[ Self.nameShort ] = Self;
 
 if( typeof module !== 'undefined' && require.main === module )
 {
-  var args = _.appArgs();
-
-  if( !args.scriptArgs.length )
-  {
-    return logger.log( wScriptLauncher.generateHelp() );
-  }
-  else if( !args.map )
-  {
-    args.map = { filePath : args.scriptArgs[ 0 ] }
-  }
-
-  args = args.map || {};
-
-  var launcher = wScriptLauncher
-  ({
-    headless : args.headless,
-    filePath : args.filePath,
-    platform : args.platform,
-    terminatingAfter : args.terminatingAfter
-  });
-
-  launcher.launch()
-  .got( function ( err,got )
-  {
-    if( err )
-    throw _.errLog( err );
-    logger.log( got );
-  });
+  var launcher = wScriptLauncher({});
+  launcher.argsApply();
+  launcher.launch();
 }
+
+// if( typeof module !== 'undefined' && require.main === module )
+// {
+//   var args = _.appArgs();
+//
+//   if( !args.scriptArgs.length )
+//   {
+//     return logger.log( wScriptLauncher.helpGet() );
+//   }
+//   else if( !args.map )
+//   {
+//     args.map = { filePath : args.scriptArgs[ 0 ] }
+//   }
+//
+//   args = args.map || {};
+//
+//
+//
+//   var launcher = wScriptLauncher
+//   ({
+//     headless : args.headless,
+//     filePath : args.filePath,
+//     platform : args.platform,
+//     terminatingAfter : args.terminatingAfter
+//   });
+//
+//   launcher.launch()
+//   .got( function ( err,got )
+//   {
+//     if( err )
+//     throw _.errLog( err );
+//     logger.log( got );
+//   });
+//
+// }
 
 })();
