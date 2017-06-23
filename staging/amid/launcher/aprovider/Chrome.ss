@@ -24,6 +24,8 @@ var Self = function wPlatformProviderChrome( o )
   return Self.prototype.init.apply( this,arguments );
 }
 
+Self.nameShort = 'Chrome';
+
 //
 
 function init( o )
@@ -148,9 +150,8 @@ _.PlatformProvider.AdvancedMixin.mixin( Self );
 
 if( typeof module !== 'undefined' )
 module[ 'exports' ] = Self;
-_.PlatformProvider.Chrome = Self;
+_.PlatformProvider[ Self.nameShort ] = Self;
 
-if( typeof module !== 'undefined' )
 if( !_.PlatformProvider.Default )
 _.PlatformProvider.Default = Self;
 
