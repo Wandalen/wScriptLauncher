@@ -41,31 +41,67 @@ function runAct()
   var self = this;
 
   var con = new wConsequence();
-
-  var flags = [];
+  var profilePath = _.pathResolve( __dirname, '../../../../tmp.tmp/chrome' );
+  var debuggingPort = 9222; //!!! later replace this with automatic port finding
+  var flags =
+  [
+    '--no-first-run',
+    `--remote-debugging-port=${ debuggingPort }`,
+    `--user-data-dir=${ profilePath }`
+  ];
 
   if( self.headless )
   flags.push( '--headless', '--disable-gpu' );
 
-  chromeLauncher.launch
-  ({
-    startingUrl: self.url,
-    chromeFlags: flags
-  })
-  .then( function( chrome )
-  {
-    self._process = chrome;
-    if( self.verbosity >= 3 )
-    logger.log( `Chrome debugging port running on ${chrome.port}` );
-    con.give();
-  })
-  .catch( function ( err )
-  {
-    con.error( err );
-  })
+  flags.push( self.url );
 
-  return con;
+  var chromePath = '/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome';
+
+  self._process =
+  {
+    mode : 'shell',
+    code : chromePath + ' ' + flags.join( ' ' ),
+    stdio : 'ignore',
+    outputPiping : 0,
+    verbosity : 0
+  }
+
+  return _.shell( self._process );
 }
+
+//
+
+// function runAct()
+// {
+//   var self = this;
+//
+//   var con = new wConsequence();
+//
+//   var flags = [];
+//
+//   if( self.headless )
+//   flags.push( '--headless', '--disable-gpu' );
+//
+//   chromeLauncher.launch
+//   ({
+//     startingUrl: self.url,
+//     chromeFlags: flags
+//   })
+//   .then( function( chrome )
+//   {
+//     self._process = chrome;
+//     console.log( self._process.kill );
+//     if( self.verbosity >= 3 )
+//     logger.log( `Chrome debugging port running on ${chrome.port}` );
+//     con.give();
+//   })
+//   .catch( function ( err )
+//   {
+//     con.error( err );
+//   })
+//
+//   return con;
+// }
 
 //
 
@@ -73,22 +109,12 @@ function terminateAct()
 {
   var self = this;
 
-  var con = new wConsequence();
+  var con = new wConsequence().give();
 
-  if( !self._process )
-  con.error( _.err( "Process is not running" ) );
+  if( !self._process.child )
+  con.doThen( () => _.err( 'Process is not running' ) );
   else
-  {
-    self._process.kill()
-    .then( function()
-    {
-      con.give();
-    })
-    .catch( function ( err )
-    {
-      con.error( err );
-    });
-  }
+  con.doThen( () => self._process.child.kill() );
 
   return con;
 }

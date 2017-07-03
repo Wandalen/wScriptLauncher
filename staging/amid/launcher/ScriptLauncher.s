@@ -51,10 +51,6 @@ function init( o )
 
   if( o )
   self.copy( o );
-
-  if( self.terminatingAfter === null )
-  self.terminatingAfter = self.headless;
-
 }
 
 //
@@ -83,6 +79,9 @@ function argsApply()
     platform : args.platform,
     terminatingAfter : args.terminatingAfter
   });
+
+  if( self.terminatingAfter === null )
+  self.terminatingAfter = self.headless;
 
   return self;
 }
@@ -148,13 +147,19 @@ function _serverLaunch( )
   {
     res.sendFile( _.pathJoin( statics, 'index.html' ) );
   });
+
   app.get( '/script', function ( req, res )
   {
     res.send( script );
   });
+
+  app.get( '/options', function ( req, res )
+  {
+    res.send({ terminatingAfter : self.terminatingAfter });
+  });
+
   app.get( '/terminate', function ( req, res )
   {
-    if( self.terminatingAfter )
     self.terminate();
   });
 

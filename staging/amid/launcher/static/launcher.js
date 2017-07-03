@@ -35,6 +35,7 @@ function request( url, onResponse )
     xmlHttp.onreadystatechange = function ()
     {
       if ( xmlHttp.readyState == 4 && xmlHttp.status == 200 )
+      if( _.routineIs( onResponse ) )
       onResponse( xmlHttp.responseText );
     }
     xmlHttp.open( "GET", url, true );
@@ -46,11 +47,26 @@ function getScript()
   var self = this;
   var con = new wConsequence();
   self.parsedUrl = _.urlParse( window.location.href );
+
+  //window closed -> terminate
+  _global_.onbeforeunload = function terminate()
+  {
+    var teminateUrl = _.urlJoin( self.parsedUrl.origin, 'terminate' );
+    request( teminateUrl );
+  }
+
   var requestUrl = _.urlJoin( self.parsedUrl.origin, 'script' )
   request( requestUrl, function ( data )
   {
      self.script = _.routineMake({ code : data, prependingReturn : 0 } );
-     con.give();
+
+     //get launch options from server
+     var requestUrl = _.urlJoin( self.parsedUrl.origin, 'options' )
+     request( requestUrl, function ( data )
+     {
+       self.options = JSON.parse( data );
+       con.give();
+     })
   })
 
   return con;
@@ -73,7 +89,11 @@ function run ()
   })
   .doThen( () => self.loggerToServer.connect() )
   .doThen( () => self.script() )
-  .doThen( () => self.terminate() )
+  .doThen( function ()
+  {
+    if( self.options.terminatingAfter )
+    return self.terminate();
+  })
 }
 
 //
@@ -101,6 +121,7 @@ var Restricts =
   script : null,
   parsedUrl : null,
   loggerToServer : null,
+  options : null,
 }
 
 var Statics =
