@@ -49,9 +49,12 @@ function runAct()
   var flags =
   [
     `--no-first-run`,
+    `--no-default-browser-check`,
+    // `--no-startup-window`,
+    `--disable-component-extensions-with-background-pages`,
+    `--disable-infobars`,
     `--remote-debugging-port=${ debuggingPort }`,
     `--user-data-dir=${ profilePath }`,
-    `--disable-hosted-apps-in-windows`,
     self.url
   ];
 
@@ -69,6 +72,7 @@ function runAct()
     verbosity : self.verbosity,
   }
 
+  debugger;
   return self._shell( self._shellOptions );
 }
 
