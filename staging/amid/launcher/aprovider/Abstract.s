@@ -35,7 +35,6 @@ function init( o )
 
   if( self.verbosity > 1 )
   logger.log( 'new',_.strTypeOf( self ) );
-
 }
 
 //
@@ -57,9 +56,31 @@ function terminate()
 
 //
 
-function _shell()
+function _shell( appPath, flags )
 {
   var self = this;
+  var code;
+
+  if( self.usingOsxOpen )
+  {
+    if( !self.osxOpenOptions )
+    self.osxOpenOptions = '-W -n -j -g -a';
+
+    code = 'open ' + self.osxOpenOptions + ' ' + appPath + ' --args ' + flags
+  }
+  else
+  {
+    code = appPath + ' ' + flags;
+  }
+
+  self._shellOptions =
+  {
+    mode : 'shell',
+    code : code,
+    stdio : 'ignore',
+    outputPiping : 0,
+    verbosity : self.verbosity,
+  }
 
   return _.shell( self._shellOptions );
 }
@@ -73,6 +94,7 @@ var Composes =
   url : null,
   headless : true,
   verbosity : 1,
+  osxOpenOptions : null
 }
 
 var Aggregates =

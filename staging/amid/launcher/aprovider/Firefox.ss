@@ -50,15 +50,15 @@ function runAct()
 
   _.fileProvider.directoryMake( profilePath );
 
-  self._shellOptions =
-  {
-    mode : 'spawn',
-    code : firefoxPath + ' ' + args,
-    outputPiping : 0,
-    verbosity : 0
-  }
+  // self._shellOptions =
+  // {
+  //   mode : 'spawn',
+  //   code : firefoxPath + ' ' + args,
+  //   outputPiping : 0,
+  //   verbosity : 0
+  // }
 
-  return self._shell( self._shellOptions );
+  return self._shell( firefoxPath, args );
 }
 
 //
@@ -93,6 +93,7 @@ function terminateAct()
 
 var Composes =
 {
+  usingOsxOpen : 0
 }
 
 var Aggregates =
