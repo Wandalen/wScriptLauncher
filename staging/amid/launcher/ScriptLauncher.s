@@ -76,7 +76,8 @@ function argsApply()
     headless : args.headless,
     filePath : args.filePath,
     platform : args.platform,
-    terminatingAfter : args.terminatingAfter
+    terminatingAfter : args.terminatingAfter,
+    usingOsxOpen : args.usingOsxOpen
   });
 
   if( self.terminatingAfter === null )
@@ -239,7 +240,8 @@ function _browserLaunch()
   {
     url : `http://localhost:${self.serverPort}`,
     headless : self.headless,
-    verbosity : self.verbosity
+    verbosity : self.verbosity,
+    usingOsxOpen : self.usingOsxOpen
   }
 
   var provider = platformsMap[ self.platform ];
@@ -310,7 +312,8 @@ var Composes =
   headless : true,
   verbosity : 1,
   handlingFeedback : 1,
-  terminatingAfter : null
+  terminatingAfter : null,
+  usingOsxOpen : 0
 }
 
 var Aggregates =

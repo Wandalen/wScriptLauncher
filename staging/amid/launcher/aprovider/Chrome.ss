@@ -63,17 +63,17 @@ function runAct()
 
   flags = flags.join( ' ' );
 
-  self._shellOptions =
-  {
-    mode : 'shell',
-    code : chromePath + ' ' + flags,
-    stdio : 'ignore',
-    outputPiping : 0,
-    verbosity : self.verbosity,
-  }
+  // self._shellOptions =
+  // {
+  //   mode : 'shell',
+  //   code : chromePath + ' ' + flags,
+  //   stdio : 'ignore',
+  //   outputPiping : 0,
+  //   verbosity : self.verbosity,
+  // }
 
   debugger;
-  return self._shell( self._shellOptions );
+  return self._shell( chromePath, flags );
 }
 
 //
@@ -132,6 +132,7 @@ function terminateAct()
 
 var Composes =
 {
+  usingOsxOpen : 0
 }
 
 var Aggregates =
