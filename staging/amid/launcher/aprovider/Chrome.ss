@@ -6,7 +6,7 @@ if( typeof module !== 'undefined' )
 {
   if( !wTools.PlatformProvider.Abstract )
   require( './PlatformProviderAbstract.s' );
-  var chromeLauncher = require( 'lighthouse/chrome-launcher' );
+  // var chromeLauncher = require( 'lighthouse/chrome-launcher' );
 }
 
 var _ = wTools;
@@ -42,25 +42,27 @@ function runAct()
 
   var con = new wConsequence();
   var profilePath = _.pathResolve( __dirname, '../../../../tmp.tmp/chrome' );
-  var debuggingPort = 9222; //!!! later replace this with automatic port finding
+  //!!! later replace this with automatic port finding
+  var debuggingPort = 9222;
+  //!!! add automatic chrome path finding
+  var chromePath = '/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome';
   var flags =
   [
     '--no-first-run',
     `--remote-debugging-port=${ debuggingPort }`,
-    `--user-data-dir=${ profilePath }`
+    `--user-data-dir=${ profilePath }`,
+    self.url
   ];
 
   if( self.headless )
-  flags.push( '--headless', '--disable-gpu' );
+  flags.unshift( '--headless', '--disable-gpu' );
 
-  flags.push( self.url );
-
-  var chromePath = '/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome';
+  flags = flags.join( ' ' );
 
   self._process =
   {
     mode : 'shell',
-    code : chromePath + ' ' + flags.join( ' ' ),
+    code : chromePath + ' ' + flags,
     stdio : 'ignore',
     outputPiping : 0,
     verbosity : 0
