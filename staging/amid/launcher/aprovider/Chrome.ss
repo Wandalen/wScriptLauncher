@@ -48,9 +48,10 @@ function runAct()
   var chromePath = '/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome';
   var flags =
   [
-    '--no-first-run',
+    `--no-first-run`,
     `--remote-debugging-port=${ debuggingPort }`,
     `--user-data-dir=${ profilePath }`,
+    `--disable-hosted-apps-in-windows`,
     self.url
   ];
 
@@ -59,16 +60,16 @@ function runAct()
 
   flags = flags.join( ' ' );
 
-  self._process =
+  self._shellOptions =
   {
     mode : 'shell',
     code : chromePath + ' ' + flags,
     stdio : 'ignore',
     outputPiping : 0,
-    verbosity : 0
+    verbosity : self.verbosity,
   }
 
-  return _.shell( self._process );
+  return self._shell( self._shellOptions );
 }
 
 //
@@ -91,8 +92,8 @@ function runAct()
 //   })
 //   .then( function( chrome )
 //   {
-//     self._process = chrome;
-//     console.log( self._process.kill );
+//     self._shellOptions = chrome;
+//     console.log( self._shellOptions.kill );
 //     if( self.verbosity >= 3 )
 //     logger.log( `Chrome debugging port running on ${chrome.port}` );
 //     con.give();
@@ -113,10 +114,10 @@ function terminateAct()
 
   var con = new wConsequence().give();
 
-  if( !self._process.child )
+  if( !self._shellOptions.child )
   con.doThen( () => _.err( 'Process is not running' ) );
   else
-  con.doThen( () => self._process.child.kill() );
+  con.doThen( () => self._shellOptions.child.kill() );
 
   return con;
 }

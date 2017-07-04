@@ -18,7 +18,6 @@ if( typeof module !== 'undefined' )
   require( './aprovider/Firefox.ss' );
   require( './aprovider/Electron.ss' );
 
-  var pug = require( 'pug' );
 }
 
 //
@@ -249,8 +248,8 @@ function _browserLaunch()
   self._provider = provider( providerOptions );
   var result = self._provider.run();
 
-  if( self._provider._process )
-  self._provider._process.child.on( 'close', () => self.terminate() );
+  if( self._provider._shellOptions )
+  self._provider._shellOptions.child.on( 'close', () => self.terminate() );
 
   return result;
 }
@@ -393,40 +392,5 @@ if( typeof module !== 'undefined' && require.main === module )
   launcher.argsApply();
   launcher.launch();
 }
-
-// if( typeof module !== 'undefined' && require.main === module )
-// {
-//   var args = _.appArgs();
-//
-//   if( !args.scriptArgs.length )
-//   {
-//     return logger.log( wScriptLauncher.helpGet() );
-//   }
-//   else if( !args.map )
-//   {
-//     args.map = { filePath : args.scriptArgs[ 0 ] }
-//   }
-//
-//   args = args.map || {};
-//
-//
-//
-//   var launcher = wScriptLauncher
-//   ({
-//     headless : args.headless,
-//     filePath : args.filePath,
-//     platform : args.platform,
-//     terminatingAfter : args.terminatingAfter
-//   });
-//
-//   launcher.launch()
-//   .got( function ( err,got )
-//   {
-//     if( err )
-//     throw _.errLog( err );
-//     logger.log( got );
-//   });
-//
-// }
 
 })();

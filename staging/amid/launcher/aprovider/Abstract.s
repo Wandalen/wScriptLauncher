@@ -33,7 +33,7 @@ function init( o )
   if( o )
   self.copy( o );
 
-  if( self.verbosity )
+  if( self.verbosity > 1 )
   logger.log( 'new',_.strTypeOf( self ) );
 
 }
@@ -55,6 +55,15 @@ function terminate()
   return self.terminateAct();
 }
 
+//
+
+function _shell()
+{
+  var self = this;
+
+  return _.shell( self._shellOptions );
+}
+
 // --
 // relationship
 // --
@@ -63,7 +72,7 @@ var Composes =
 {
   url : null,
   headless : true,
-  verbosity : 1
+  verbosity : 1,
 }
 
 var Aggregates =
@@ -76,7 +85,7 @@ var Associates =
 
 var Restricts =
 {
-  _process : null
+  _shellOptions : null
 }
 
 var Statics =
@@ -96,6 +105,9 @@ var Proto =
 
   run : run,
   terminate : terminate,
+
+  _shell : _shell,
+
 
   // relationships
 

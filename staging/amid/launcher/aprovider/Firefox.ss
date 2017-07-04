@@ -50,7 +50,7 @@ function runAct()
 
   _.fileProvider.directoryMake( profilePath );
 
-  self._process =
+  self._shellOptions =
   {
     mode : 'spawn',
     code : firefoxPath + ' ' + args,
@@ -58,7 +58,7 @@ function runAct()
     verbosity : 0
   }
 
-  return _.shell( self._process );
+  return self._shell( self._shellOptions );
 }
 
 //
@@ -69,13 +69,13 @@ function terminateAct()
 
   var con = new wConsequence();
 
-  if( self._process.child.killed )
+  if( self._shellOptions.child.killed )
   con.error( _.err( "Process is not running" ) );
   else
   {
     try
     {
-      self._process.child.kill( 'SIGINT' )
+      self._shellOptions.child.kill( 'SIGINT' )
       con.give();
     }
     catch( err )
