@@ -65,9 +65,9 @@ app.on( 'browser-window-created', function ()
   if( _.routineIs( process.send ) )
   process.send( 'ready' );
 })
+
 app.on( 'window-all-closed', function ()
 {
-  // if ( process.platform !== 'darwin' )
   app.quit();
 });
 

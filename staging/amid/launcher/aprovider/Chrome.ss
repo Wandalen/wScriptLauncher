@@ -6,7 +6,7 @@ if( typeof module !== 'undefined' )
 {
   if( !wTools.PlatformProvider.Abstract )
   require( './PlatformProviderAbstract.s' );
-  var chromeLauncher = require( 'lighthouse/chrome-launcher' );
+  // var chromeLauncher = require( 'lighthouse/chrome-launcher' );
 }
 
 var _ = wTools;
@@ -41,31 +41,69 @@ function runAct()
   var self = this;
 
   var con = new wConsequence();
-
-  var flags = [];
+  var profilePath = _.pathResolve( __dirname, '../../../../tmp.tmp/chrome' );
+  //!!! later replace this with automatic port finding
+  var debuggingPort = 9222;
+  //!!! add automatic chrome path finding
+  var chromePath = '/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome';
+  var flags =
+  [
+    '--no-first-run',
+    `--remote-debugging-port=${ debuggingPort }`,
+    `--user-data-dir=${ profilePath }`,
+    self.url
+  ];
 
   if( self.headless )
-  flags.push( '--headless', '--disable-gpu' );
+  flags.unshift( '--headless', '--disable-gpu' );
 
-  chromeLauncher.launch
-  ({
-    startingUrl: self.url,
-    chromeFlags: flags
-  })
-  .then( function( chrome )
-  {
-    self._process = chrome;
-    if( self.verbosity >= 3 )
-    logger.log( `Chrome debugging port running on ${chrome.port}` );
-    con.give();
-  })
-  .catch( function ( err )
-  {
-    con.error( err );
-  })
+  flags = flags.join( ' ' );
 
-  return con;
+  self._process =
+  {
+    mode : 'shell',
+    code : chromePath + ' ' + flags,
+    stdio : 'ignore',
+    outputPiping : 0,
+    verbosity : 0
+  }
+
+  return _.shell( self._process );
 }
+
+//
+
+// function runAct()
+// {
+//   var self = this;
+//
+//   var con = new wConsequence();
+//
+//   var flags = [];
+//
+//   if( self.headless )
+//   flags.push( '--headless', '--disable-gpu' );
+//
+//   chromeLauncher.launch
+//   ({
+//     startingUrl: self.url,
+//     chromeFlags: flags
+//   })
+//   .then( function( chrome )
+//   {
+//     self._process = chrome;
+//     console.log( self._process.kill );
+//     if( self.verbosity >= 3 )
+//     logger.log( `Chrome debugging port running on ${chrome.port}` );
+//     con.give();
+//   })
+//   .catch( function ( err )
+//   {
+//     con.error( err );
+//   })
+//
+//   return con;
+// }
 
 //
 
@@ -73,22 +111,12 @@ function terminateAct()
 {
   var self = this;
 
-  var con = new wConsequence();
+  var con = new wConsequence().give();
 
-  if( !self._process )
-  con.error( _.err( "Process is not running" ) );
+  if( !self._process.child )
+  con.doThen( () => _.err( 'Process is not running' ) );
   else
-  {
-    self._process.kill()
-    .then( function()
-    {
-      con.give();
-    })
-    .catch( function ( err )
-    {
-      con.error( err );
-    });
-  }
+  con.doThen( () => self._process.child.kill() );
 
   return con;
 }
