@@ -61,7 +61,7 @@ function runAct()
   // }
 
 
-  if( self._headlessNoFocus )
+  // if( self._headlessNoFocus )
   self._plistEdit();
 
   var con = self._shell();
