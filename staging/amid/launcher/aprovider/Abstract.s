@@ -167,7 +167,15 @@ function _shell()
     }
   }
 
-  return _.shell( self._shellOptions );
+  return _.shell( self._shellOptions )
+  .doThen( function ()
+  {
+    self._shellOptions.child.on( 'close', function ()
+    {
+      if( self._plistChanged )
+      self._plistRestore();  
+    })
+  })
 }
 
 // --

@@ -74,10 +74,9 @@ function runAct()
 
   debugger;
   if( self._headlessNoFocus )
-  {
-    self._plistEdit();
-    self._appPath = _.strReplaceAll( self._appPath,' ', '\\ ' );
-  }
+  self._plistEdit();
+
+  self._appPath = _.strReplaceAll( self._appPath,' ', '\\ ' );
 
   var con = self._shell();
 
