@@ -24,18 +24,19 @@
     "url": "https://github.com/Wandalen/wScriptLauncher/issues"
   },
   "dependencies": {
-    "wTools": "",
-    "wConsequence": "",
-    "wLogger": "",
-    "wloggertoserver": "",
-    "wCopyable": "",
-    "wProto": "",
-    "wFiles": "",
-    "socket.io": "",
-    "express": "",
-    "lighthouse": "",
     "electron": "",
-    "firefox-location": ""
+    "express": "",
+    "firefox-location": "",
+    "lighthouse": "",
+    "plist": "",
+    "socket.io": "",
+    "wConsequence": "",
+    "wCopyable": "",
+    "wFiles": "",
+    "wLogger": "",
+    "wProto": "",
+    "wTools": "",
+    "wloggertoserver": ""
   },
   "devDependencies": {
     "wTesting": ""
