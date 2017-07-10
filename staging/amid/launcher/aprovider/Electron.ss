@@ -37,29 +37,40 @@ function runAct()
 {
   var self = this;
 
-  var electron = require( 'electron' );
+  self._appPath = require( 'electron' );
 
   var launcherPath  = _.pathResolve( __dirname, '../ElectronProcess.ss' );
 
   var port = _.urlParse( self.url ).port;
-  var args = `headless : ${self.headless} port : ${port}`;
-  
-  var o =
+  self._flags = `headless : ${self.headless} port : ${port}`;
+
+  self._shellOptions =
   {
     mode : 'shell',
     stdio : [ null, null, null, 'ipc' ],
-    code : electron + ' ' + launcherPath + ' ' + args,
+    code : self._appPath + ' ' + launcherPath + ' ' + self._flags,
     outputPiping : 0,
-    verbosity : 0,
+    verbosity : self.verbosity,
   }
 
   //!!! _.shell: Consequence gives message on o.child close event?
-  var con = _.shell( o );
-  o.child.on( 'message', function( msg )
+
+
+  if( self._headlessNoFocus )
+  self._plistEdit();
+
+  var con = self._shell();
+  con.got( function()
   {
-    if( msg === 'ready' )
-    con.give();
-  });
+    if( self._plistChanged )
+    self._plistRestore();
+
+    self._shellOptions.child.on( 'message', function( msg )
+    {
+      if( msg === 'ready' )
+      con.give();
+    });
+ });
 
   return con;
 }

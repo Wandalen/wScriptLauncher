@@ -35,7 +35,8 @@
     "express": "",
     "lighthouse": "",
     "electron": "",
-    "firefox-location": ""
+    "firefox-location": "",
+    "plist": ""
   },
   "devDependencies": {
     "wTesting": ""
