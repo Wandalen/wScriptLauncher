@@ -36,7 +36,8 @@
     "lighthouse": "",
     "electron": "",
     "firefox-location": "",
-    "plist": ""
+    "plist": "",
+    "get-port": ""
   },
   "devDependencies": {
     "wTesting": ""

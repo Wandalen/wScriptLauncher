@@ -12,6 +12,8 @@ if( typeof module !== 'undefined' )
   wTools.include( 'wConsequence' );
   wTools.include( 'wCopyable' );
 
+  require( './Tools.ss' );
+
   require( './aprovider/Abstract.s' );
   require( './aprovider/AdvancedMixin.s' );
   require( './aprovider/Chrome.ss' );
@@ -95,6 +97,11 @@ function launch()
   self.launchDone.give()
   .seal( self )
   .ifNoErrorThen( self._scriptPrepare )
+  .ifNoErrorThen( function ()
+  {
+    return _.portGet( self.serverPort )
+    .doThen( ( err, port ) => { self.serverPort = port }  );
+  })
   .ifNoErrorThen( self._serverLaunch )
   .ifNoErrorThen( self._browserLaunch )
   .ifNoErrorThen( () => self._provider );
@@ -328,7 +335,7 @@ var Restricts =
 {
   launchDone : new wConsequence(),
   server : null,
-  serverPort : 3000,
+  serverPort : null,
 
   _script : null,
   _provider : null,
