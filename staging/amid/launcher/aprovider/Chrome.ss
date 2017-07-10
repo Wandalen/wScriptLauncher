@@ -39,51 +39,57 @@ function init( o )
 function runAct()
 {
   var self = this;
-
-  var con = new wConsequence();
-  var profilePath = _.pathResolve( __dirname, '../../../../tmp.tmp/chrome' );
-  //!!! later replace this with automatic port finding
   var debuggingPort = 9222;
-  //!!! add automatic chrome path finding
-  self._appPath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-  self._flags =
-  [
-    `--no-first-run`,
-    `--no-default-browser-check`,
-    // `--no-startup-window`,
-    `--disable-component-extensions-with-background-pages`,
-    `--disable-infobars`,
-    `--remote-debugging-port=${ debuggingPort }`,
-    `--user-data-dir=${ profilePath }`,
-    self.url
-  ];
 
-  if( self.headless )
-  self._flags.unshift( '--headless', '--disable-gpu' );
+  function _runAct()
+  {
+    var con = new wConsequence();
+    var profilePath = _.pathResolve( __dirname, '../../../../tmp.tmp/chrome' );
+    //!!! add automatic chrome path finding
+    self._appPath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+    self._flags =
+    [
+      `--no-first-run`,
+      `--no-default-browser-check`,
+      // `--no-startup-window`,
+      `--disable-component-extensions-with-background-pages`,
+      `--disable-infobars`,
+      `--remote-debugging-port=${ debuggingPort }`,
+      `--user-data-dir=${ profilePath }`,
+      self.url
+    ];
 
-  self._flags = self._flags.join( ' ' );
+    if( self.headless )
+    self._flags.unshift( '--headless', '--disable-gpu' );
 
-  // self._shellOptions =
-  // {
-  //   mode : 'shell',
-  //   code : chromePath + ' ' + flags,
-  //   stdio : 'ignore',
-  //   outputPiping : 0,
-  //   verbosity : self.verbosity,
-  // }
+    self._flags = self._flags.join( ' ' );
 
-  debugger;
-  if( self._headlessNoFocus )
-  self._plistEdit();
+    // self._shellOptions =
+    // {
+    //   mode : 'shell',
+    //   code : chromePath + ' ' + flags,
+    //   stdio : 'ignore',
+    //   outputPiping : 0,
+    //   verbosity : self.verbosity,
+    // }
 
-  self._appPath = _.strReplaceAll( self._appPath,' ', '\\ ' );
+    debugger;
+    if( self._headlessNoFocus )
+    self._plistEdit();
 
-  var con = self._shell();
+    self._appPath = _.strReplaceAll( self._appPath,' ', '\\ ' );
 
-  if( self._plistChanged )
-  con.doThen( () => self._plistRestore() );
+    var con = self._shell();
 
-  return con;
+    if( self._plistChanged )
+    con.doThen( () => self._plistRestore() );
+
+    return con;
+  }
+
+  return _.portGet( debuggingPort )
+  .doThen( ( err, port ) => { debuggingPort  = port } )
+  .doThen( () => _runAct() );
 }
 
 //

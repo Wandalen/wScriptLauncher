@@ -37,6 +37,14 @@ function init( o )
   logger.log( 'new',_.strTypeOf( self ) );
 
   self._headlessNoFocus = self.headless && self.allowPlistEdit;
+
+  process.on( 'SIGINT', function()
+  {
+    if( self._plistChanged )
+    self._plistRestore();
+
+    process.exit();
+  });
 }
 
 //
@@ -131,9 +139,11 @@ function _plistRestore()
   var self = this;
 
   if( _.fileProvider.fileStat( self._plistBackupPath ) )
-  _.fileProvider.fileCopy( self._plistPath, self._plistBackupPath );
-
-  self._plistChanged = false;
+  {
+    _.fileProvider.fileCopy( self._plistPath, self._plistBackupPath );
+    _.fileProvider.fileDelete( self._plistBackupPath );
+    self._plistChanged = false;
+  }
 }
 
 //
@@ -173,7 +183,7 @@ function _shell()
     self._shellOptions.child.on( 'close', function ()
     {
       if( self._plistChanged )
-      self._plistRestore();  
+      self._plistRestore();
     })
   })
 }
