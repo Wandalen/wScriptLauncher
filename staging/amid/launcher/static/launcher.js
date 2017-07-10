@@ -83,7 +83,7 @@ function run ()
   {
     _.io = io;
     wLogger.rawOutput = true;
-    self.loggerToServer = new wLoggerToServer();
+    self.loggerToServer = new wLoggerToServer({ url : window.location.href });
     self.loggerToServer.permanentStyle = { bg : 'yellow', fg : 'black' };
     self.loggerToServer.inputFrom( console );
   })
