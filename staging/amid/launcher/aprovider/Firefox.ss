@@ -29,6 +29,8 @@ function init( o )
 {
   var self = this;
   Parent.prototype.init.call( self,o );
+
+  self._appPath = require( 'firefox-location' );
 }
 
 //
@@ -37,9 +39,9 @@ function runAct()
 {
   var self = this;
 
-  var firefoxPath = require( 'firefox-location' );
   var profilePath = _.pathResolve( __dirname, '../../../../tmp.tmp/firefox' );
-  var args =
+
+  self._flags =
   [
     self.url,
     '-no-remote',
@@ -50,39 +52,22 @@ function runAct()
 
   _.fileProvider.directoryMake( profilePath );
 
-  self._shellOptions =
-  {
-    mode : 'spawn',
-    code : firefoxPath + ' ' + args,
-    outputPiping : 0,
-    verbosity : 0
-  }
+  // self._shellOptions =
+  // {
+  //   mode : 'spawn',
+  //   code : firefoxPath + ' ' + args,
+  //   outputPiping : 0,
+  //   verbosity : 0
+  // }
 
-  return self._shell( self._shellOptions );
-}
 
-//
+  if( self._headlessNoFocus )
+  self._plistEdit();
 
-function terminateAct()
-{
-  var self = this;
+  var con = self._shell();
 
-  var con = new wConsequence();
-
-  if( self._shellOptions.child.killed )
-  con.error( _.err( "Process is not running" ) );
-  else
-  {
-    try
-    {
-      self._shellOptions.child.kill( 'SIGINT' )
-      con.give();
-    }
-    catch( err )
-    {
-      con.error( err );
-    }
-  }
+  if( self._plistChanged )
+  con.doThen( () => self._plistRestore() );
 
   return con;
 }
@@ -117,7 +102,6 @@ var Proto =
   init : init,
 
   runAct : runAct,
-  terminateAct : terminateAct,
 
   //
 

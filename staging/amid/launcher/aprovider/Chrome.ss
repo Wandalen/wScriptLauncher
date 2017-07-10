@@ -45,8 +45,8 @@ function runAct()
   //!!! later replace this with automatic port finding
   var debuggingPort = 9222;
   //!!! add automatic chrome path finding
-  var chromePath = '/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome';
-  var flags =
+  self._appPath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+  self._flags =
   [
     `--no-first-run`,
     `--no-default-browser-check`,
@@ -60,21 +60,31 @@ function runAct()
   ];
 
   if( self.headless )
-  flags.unshift( '--headless', '--disable-gpu' );
+  self._flags.unshift( '--headless', '--disable-gpu' );
 
-  flags = flags.join( ' ' );
+  self._flags = self._flags.join( ' ' );
 
-  self._shellOptions =
-  {
-    mode : 'shell',
-    code : chromePath + ' ' + flags,
-    stdio : 'ignore',
-    outputPiping : 0,
-    verbosity : self.verbosity,
-  }
+  // self._shellOptions =
+  // {
+  //   mode : 'shell',
+  //   code : chromePath + ' ' + flags,
+  //   stdio : 'ignore',
+  //   outputPiping : 0,
+  //   verbosity : self.verbosity,
+  // }
 
   debugger;
-  return self._shell( self._shellOptions );
+  if( self._headlessNoFocus )
+  self._plistEdit();
+
+  self._appPath = _.strReplaceAll( self._appPath,' ', '\\ ' );
+
+  var con = self._shell();
+
+  if( self._plistChanged )
+  con.doThen( () => self._plistRestore() );
+
+  return con;
 }
 
 //
@@ -113,19 +123,19 @@ function runAct()
 
 //
 
-function terminateAct()
-{
-  var self = this;
-
-  var con = new wConsequence().give();
-
-  if( !self._shellOptions.child )
-  con.doThen( () => _.err( 'Process is not running' ) );
-  else
-  con.doThen( () => self._shellOptions.child.kill() );
-
-  return con;
-}
+// function terminateAct()
+// {
+//   var self = this;
+//
+//   var con = new wConsequence().give();
+//
+//   if( !self._shellOptions.child )
+//   con.doThen( () => _.err( 'Process is not running' ) );
+//   else
+//   con.doThen( () => self._shellOptions.child.kill() );
+//
+//   return con;
+// }
 
 // --
 // relationship
@@ -157,7 +167,6 @@ var Proto =
   init : init,
 
   runAct : runAct,
-  terminateAct : terminateAct,
 
   //
 

@@ -36,6 +36,7 @@ function init( o )
   if( self.verbosity > 1 )
   logger.log( 'new',_.strTypeOf( self ) );
 
+  self._headlessNoFocus = self.headless && self.allowPlistEdit;
 }
 
 //
@@ -57,11 +58,124 @@ function terminate()
 
 //
 
-function _shell()
+function terminateAct()
 {
   var self = this;
 
-  return _.shell( self._shellOptions );
+  var con = new wConsequence();
+
+  if( self._shellOptions.child.killed )
+  con.error( _.err( "Process is not running" ) );
+  else
+  {
+    try
+    {
+      self._shellOptions.child.kill( 'SIGINT' )
+      con.give();
+    }
+    catch( err )
+    {
+      con.error( err );
+    }
+  }
+
+  return con;
+}
+
+//
+
+function _plistPathGet()
+{
+  var self = this;
+
+  var ins = 'Contents';
+  var fileName = 'Info.plist';
+  var index = self._appPath.indexOf( ins );
+  if( index !== -1 )
+  {
+    self._plistPath = _.pathJoin( self._appPath.slice( 0, index + ins.length ), fileName );
+  }
+}
+
+//
+
+function _plistEdit()
+{
+  var self = this;
+
+  self._plistPathGet();
+
+  if( !_.strIs( self._plistPath ) )
+  return;
+
+  var plist = require('plist');
+  self._plistBackupPath = self._plistPath + '.backup';
+
+  if( !_.fileProvider.fileStat( self._plistBackupPath ) )
+  _.fileProvider.fileCopy( self._plistBackupPath, self._plistPath );
+
+  var raw = _.fileProvider.fileRead( self._plistPath );
+  var list = plist.parse( raw );
+  list.LSBackgroundOnly = true;
+  raw = plist.build( list );
+
+  _.fileProvider.fileWrite( self._plistPath, raw );
+
+  self._plistChanged = true;
+}
+
+//
+
+function _plistRestore()
+{
+  var self = this;
+
+  if( _.fileProvider.fileStat( self._plistBackupPath ) )
+  _.fileProvider.fileCopy( self._plistPath, self._plistBackupPath );
+
+  self._plistChanged = false;
+}
+
+//
+
+function _shell()
+{
+  var self = this;
+  var code;
+
+  if( !self._shellOptions )
+  {
+    if( self.usingOsxOpen )
+    {
+      if( !self.osxOpenOptions )
+      self.osxOpenOptions = '-W -n -j -g -a';
+
+      code = 'open ' + self.osxOpenOptions + ' ' + self._appPath + ' --args ' + self._flags
+    }
+    else
+    {
+      code = self._appPath + ' ' + self._flags;
+    }
+
+    self._shellOptions =
+    {
+      mode : 'shell',
+      code : code,
+      stdio : 'ignore',
+      outputPiping : 0,
+      verbosity : self.verbosity,
+    }
+  }
+
+  return _.shell( self._shellOptions )
+  .doThen( function ()
+  {
+    self._shellOptions.child.on( 'close', function ()
+    {
+      if( self._plistChanged )
+      self._plistRestore();  
+    })
+  })
 }
 
 // --
@@ -73,6 +187,9 @@ var Composes =
   url : null,
   headless : true,
   verbosity : 1,
+  osxOpenOptions : null,
+  usingOsxOpen : 0,
+  allowPlistEdit : 1
 }
 
 var Aggregates =
@@ -85,7 +202,13 @@ var Associates =
 
 var Restricts =
 {
-  _shellOptions : null
+  _shellOptions : null,
+  _plistPath : null,
+  _plistBackupPath : null,
+  _appPath : null,
+  _flags : null,
+  _plistChanged : false,
+  _headlessNoFocus : false,
 }
 
 var Statics =
@@ -104,10 +227,14 @@ var Proto =
   //
 
   run : run,
+
   terminate : terminate,
+  terminateAct : terminateAct,
 
   _shell : _shell,
-
+  _plistPathGet : _plistPathGet,
+  _plistEdit : _plistEdit,
+  _plistRestore : _plistRestore,
 
   // relationships
 
