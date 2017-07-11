@@ -327,6 +327,13 @@ function helpGet()
   return _.toStr( help, strOptions );
 }
 
+//
+
+function providersGet()
+{
+  return platformsMap;
+}
+
 // --
 // relationship
 // --
@@ -363,7 +370,8 @@ var Restricts =
 var Statics  =
 {
   helpGet : helpGet,
-  helpOnly : false
+  helpOnly : false,
+  providersGet : providersGet
 }
 
 // --
