@@ -5,7 +5,7 @@
   "author": "Kostiantyn Wandalen <wtory.net@domainsbyproxy.com>",
   "license": "MIT",
   "bin": {
-    "launcher": "staging/amid/launcher/Launcher.ss"
+    "launcher": "staging/amid/launcher/ScriptLauncher.s"
   },
   "main": "staging/amid/launcher/ScriptLauncher.s",
   "files": [
