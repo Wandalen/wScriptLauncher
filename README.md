@@ -1,4 +1,4 @@
-# wScriptLauncher [![BrowserStack Status](https://www.browserstack.com/automate/badge.svg?badge_key=<badge_key>)](https://www.browserstack.com/automate/public-build/<badge_key>)
+# wScriptLauncher [![Build Status](https://travis-ci.org/Wandalen/wScriptLauncher.svg?branch=master)](https://travis-ci.org/Wandalen/wScriptLauncher) [![BrowserStack Status](https://www.browserstack.com/automate/badge.svg?badge_key=<badge_key>)](https://www.browserstack.com/automate/public-build/<badge_key>)
 
 wScriptLauncher provides a simple human-machine, machine-machine interfaces to run a script file on a platform of interest and get output to your terminal. The platform could be remote or local, browser or native. Platforms list could be extended by an implementation of a new custom platform provider.
 
