@@ -45,9 +45,9 @@ Google Chrome|chrome
 Electron|electron
 Node.js|node
 
-#### Running
+### Running
 
-##### via Node:
+#### via Node:
 ```javascript
 var _ = wTools;
 
@@ -78,7 +78,7 @@ launcher.launch()
 ```
 [Sample here.](https://github.com/Wandalen/wScriptLauncher/blob/master/sample/ScriptLauncher.js)
 
-##### via CLI:
+#### via CLI:
 * To print help
 ```terminal
 launcher
