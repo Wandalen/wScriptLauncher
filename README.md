@@ -1,4 +1,4 @@
-# wScriptLauncher<!-- [![BrowserStack Status](https://www.browserstack.com/automate/badge.svg?badge_key=<badge_key>)](https://www.browserstack.com/automate/public-build/<badge_key>) -->
+# wScriptLauncher [![BrowserStack Status](https://www.browserstack.com/automate/badge.svg?badge_key=<badge_key>)](https://www.browserstack.com/automate/public-build/<badge_key>)
 
 wScriptLauncher provides simple way to run script file inside chosen platrform( browser, cloud-based testing tool, etc. ) and get output to your terminal.
 
@@ -79,19 +79,19 @@ launcher.launch()
 [Sample here.](https://github.com/Wandalen/wScriptLauncher/blob/master/sample/ScriptLauncher.js)
 
 #### via CLI:
-* To print help
+* To print help:
 ```terminal
 launcher
 ```
-* To run script with default setting
+* To run script with default setting:
 ```terminal
 launcher /path/to/file.js
 ```
-* To run script with options, first argument must be path
+* To run script with options, first argument must be path:
 ```terminal
 launcher /path/to/file.js platform : chrome headless : 0 terminatingAfter : 1
 ```
-* Another way to run script with options
+* Another way to run script with options:
 ```terminal
 launcher filePath : /path/to/file.js platform : firefox headless : 1
 ```
