@@ -57,6 +57,7 @@ function runAct()
       // `--no-startup-window`,
       `--disable-component-extensions-with-background-pages`,
       `--disable-infobars`,
+      `--disable-gl-drawing-for-tests`,
       `--remote-debugging-port=${ debuggingPort }`,
       `--user-data-dir=${ profilePath }`,
       self.url
