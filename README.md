@@ -1,26 +1,23 @@
 # wScriptLauncher [![BrowserStack Status](https://www.browserstack.com/automate/badge.svg?badge_key=<badge_key>)](https://www.browserstack.com/automate/public-build/<badge_key>)
 
-wScriptLauncher provides simple way to run script file inside chosen platrform and get output to your terminal.
-Platform could be remote or local, browser or native. Platforms list could be extended by implementation of a new custom platform provider.
+wScriptLauncher provides a simple human-machine, machine-machine interfaces to run a script file on a platform of interest and get output to your terminal. The platform could be remote or local, browser or native. Platforms list could be extended by an implementation of a new custom platform provider.
 
-## Platforms available:
+## Implemented platforms :
+> Name - platform option value
 
-* [Browserstack]( https://www.browserstack.com )
-* [Mozilla Firefox]( https://www.mozilla.org/uk/firefox/new )
-* [Google Chrome](https://www.google.com/chrome)
-* [ Electron ](https://electron.atom.io)
-* [ PhantomJs ](https://phantomjs.org)
-* [ Node.js ](https://nodejs.org)
+* [Mozilla Firefox]( https://www.mozilla.org/uk/firefox/new ) - firefox
+* [Google Chrome](https://www.google.com/chrome) - chrome
+* [ Electron ](https://electron.atom.io) - electron
+* [ PhantomJs ](https://phantomjs.org) - phantomjs
+* [ Node.js ](https://nodejs.org) - node
+* [Browserstack]( https://www.browserstack.com ) - browserstack
 
 ## Installation
 ```terminal
 npm install wscriptlauncher
 ```
 
-## Usage
-
-
-#### Options
+## Usage options
 Option | Type | Optional |  Default | Description
 ------------------------- | -------------------------| -------------------------| :------------------------- | -------------------------
 filePath |string || |path to script file
@@ -29,18 +26,8 @@ headless |boolean|*|true| run in headless mode
 terminatingAfter |boolean|*|true| terminate launcher after script execution
 verbosity |number|*|1| sets level of details of console output
 
-<!-- List of available values for `platform` option:
+## Usage with Nodejs:
 
-Platform | Value |
-------------------------- | -------------------------
-Mozilla Firefox|firefox
-Google Chrome|chrome
-Electron|electron
-Node.js|node -->
-
-### Running
-
-#### via Node:
 ```javascript
 var _ = wTools;
 
@@ -71,20 +58,21 @@ launcher.launch()
 ```
 [Sample here.](https://github.com/Wandalen/wScriptLauncher/blob/master/sample/ScriptLauncher.js)
 
-#### via CLI:
-* To print help:
+## Usage with command line:
+
+To print help:
 ```terminal
 launcher
 ```
-* To run script with default setting:
+To run script with default setting:
 ```terminal
 launcher /path/to/file.js
 ```
-* To run script with options, first argument must be path:
+To run script with options, first argument must be path:
 ```terminal
 launcher /path/to/file.js platform : chrome headless : 0 terminatingAfter : 1
 ```
-* Another way to run script with options:
+Another way to run script with options:
 ```terminal
 launcher filePath : /path/to/file.js platform : firefox headless : 1
 ```
