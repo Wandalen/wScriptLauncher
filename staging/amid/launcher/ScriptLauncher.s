@@ -19,6 +19,7 @@ if( typeof module !== 'undefined' )
   require( './aprovider/Chrome.ss' );
   require( './aprovider/Firefox.ss' );
   require( './aprovider/Electron.ss' );
+  require( './aprovider/Node.ss' );
 
 }
 
@@ -68,6 +69,7 @@ function argsApply()
   if( !args.scriptArgs.length )
   {
     logger.log( Self.helpGet() );
+    Self.helpOnly = true;
     return self;
   }
 
@@ -94,17 +96,29 @@ function launch()
 {
   var self = this;
 
-  self.launchDone.give()
-  .seal( self )
-  .ifNoErrorThen( self._scriptPrepare )
-  .ifNoErrorThen( function ()
+  self.launchDone.give();
+
+  if( self.platform === 'node' )
   {
-    return _.portGet( self.serverPort )
-    .doThen( ( err, port ) => { self.serverPort = port }  );
-  })
-  .ifNoErrorThen( self._serverLaunch )
-  .ifNoErrorThen( self._browserLaunch )
-  .ifNoErrorThen( () => self._provider );
+    self.launchDone
+    .seal( self )
+    .ifNoErrorThen( self._browserLaunch )
+    .ifNoErrorThen( () => self._provider );
+  }
+  else
+  {
+    self.launchDone
+    .seal( self )
+    .ifNoErrorThen( self._scriptPrepare )
+    .ifNoErrorThen( function ()
+    {
+      return _.portGet( self.serverPort )
+      .doThen( ( err, port ) => { self.serverPort = port }  );
+    })
+    .ifNoErrorThen( self._serverLaunch )
+    .ifNoErrorThen( self._browserLaunch )
+    .ifNoErrorThen( () => self._provider );
+  }
 
   if( self.handlingFeedback )
   self.launchDone
@@ -254,6 +268,10 @@ function _browserLaunch()
   var provider = platformsMap[ self.platform ];
   if( provider === undefined )
   return self.launchDone.error( 'Requested browser is not supported.' );
+
+  if( self.platform === 'node' )
+  providerOptions.url = self.filePath;
+
   self._provider = provider( providerOptions );
   var result = self._provider.run();
 
@@ -269,7 +287,8 @@ var platformsMap =
 {
   'firefox' : _.PlatformProvider.Firefox,
   'chrome' : _.PlatformProvider.Chrome,
-  'electron' : _.PlatformProvider.Electron
+  'electron' : _.PlatformProvider.Electron,
+  'node' : _.PlatformProvider.Node
 }
 
 //
@@ -343,7 +362,8 @@ var Restricts =
 
 var Statics  =
 {
-  helpGet : helpGet
+  helpGet : helpGet,
+  helpOnly : false
 }
 
 // --
@@ -400,6 +420,7 @@ if( typeof module !== 'undefined' && require.main === module )
 {
   var launcher = wScriptLauncher({});
   launcher.argsApply();
+  if( !wScriptLauncher.helpOnly )
   launcher.launch();
 }
 
