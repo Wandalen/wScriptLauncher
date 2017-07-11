@@ -10,10 +10,13 @@ npm install wscriptlauncher
 ## Usage
 #### Platforms list:
 ###### Cloud-based:
+* <p>
+  Cloud solution for cross-browser testing on different platforms:
+  </p> 
+  <a href="https://www.browserstack.com/">
+  <img border="0" alt="browserstack" src="https://www.browserstack.com/images/layout/browserstack-logo-600x315.png" height="100" style="display:block">
+  </a>
 
- <img src = "https://www.browserstack.com/images/layout/browserstack-logo-600x315.png" height = "80">
- 
- * [Cloud solution for cross-browser testing on different platforms]( https://www.browserstack.com/ ) 
 
 ###### Browsers:
 * [Mozilla Firefox]( https://www.mozilla.org/uk/firefox/new )
