@@ -10,7 +10,10 @@ npm install wscriptlauncher
 ## Usage
 #### Platforms list:
 ###### Cloud-based:
-* <a href="http://browserstack.com"><img src = "https://www.browserstack.com/images/layout/browserstack-logo-600x315.png" height = "80"> - cloud solution for cross-browser testing on different platforms.</a>
+
+ <img src = "https://www.browserstack.com/images/layout/browserstack-logo-600x315.png" height = "80">
+ 
+ * [Cloud solution for cross-browser testing on different platforms]( https://www.browserstack.com/ ) 
 
 ###### Browsers:
 * [Mozilla Firefox]( https://www.mozilla.org/uk/firefox/new )
@@ -23,7 +26,7 @@ npm install wscriptlauncher
 
 #### Options
 Option | Type | Optional |  Default | Description
-- | - | - | - | -
+------------------------- | -------------------------| -------------------------| :------------------------- | -------------------------
 filePath |string || |path to script file
 platform |string|*|chrome| sets target platfrom
 headless |boolean|*|true| run in headless mode
@@ -33,7 +36,7 @@ verbosity |number|*|1| sets level of details of console output
 List of available values for `platform` option:
 
 Platform | Value |
-- | -
+------------------------- | -------------------------
 Mozilla Firefox|firefox
 Google Chrome|chrome
 Electron|electron
