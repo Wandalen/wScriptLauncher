@@ -1,6 +1,16 @@
 # wScriptLauncher [![BrowserStack Status](https://www.browserstack.com/automate/badge.svg?badge_key=<badge_key>)](https://www.browserstack.com/automate/public-build/<badge_key>)
 
-wScriptLauncher provides simple way to run script file inside chosen platrform( browser, cloud-based testing tool, etc. ) and get output to your terminal.
+wScriptLauncher provides simple way to run script file inside chosen platrform and get output to your terminal.
+Platform could be remote or local, browser or native. Platforms list could be extended by implementation of a new custom platform provider.
+
+## Platforms available:
+
+* [Browserstack]( https://www.browserstack.com )
+* [Mozilla Firefox]( https://www.mozilla.org/uk/firefox/new )
+* [Google Chrome](https://www.google.com/chrome)
+* [ Electron ](https://electron.atom.io)
+* [ PhantomJs ](https://phantomjs.org)
+* [ Node.js ](https://nodejs.org)
 
 ## Installation
 ```terminal
@@ -8,24 +18,7 @@ npm install wscriptlauncher
 ```
 
 ## Usage
-#### Platforms list:
-###### Cloud-based:
-* <p>
-  Cloud solution for cross-browser testing on different platforms:
-  </p> 
-  <a href="https://www.browserstack.com/">
-  <img border="0" alt="browserstack" src="https://www.browserstack.com/images/layout/browserstack-logo-600x315.png" height="100" style="display:block">
-  </a>
 
-
-###### Browsers:
-* [Mozilla Firefox]( https://www.mozilla.org/uk/firefox/new )
-* [Google Chrome](https://www.google.com/chrome)
-
-###### Others:
-* [ Electron ](https://electron.atom.io)
-* [ PhantomJs ](https://phantomjs.org)
-* [ Node.js ](https://nodejs.org)
 
 #### Options
 Option | Type | Optional |  Default | Description
@@ -36,14 +29,14 @@ headless |boolean|*|true| run in headless mode
 terminatingAfter |boolean|*|true| terminate launcher after script execution
 verbosity |number|*|1| sets level of details of console output
 
-List of available values for `platform` option:
+<!-- List of available values for `platform` option:
 
 Platform | Value |
 ------------------------- | -------------------------
 Mozilla Firefox|firefox
 Google Chrome|chrome
 Electron|electron
-Node.js|node
+Node.js|node -->
 
 ### Running
 
@@ -95,3 +88,10 @@ launcher /path/to/file.js platform : chrome headless : 0 terminatingAfter : 1
 ```terminal
 launcher filePath : /path/to/file.js platform : firefox headless : 1
 ```
+## Acknowledgements
+We would like to thank [Browserstack]( https://www.browserstack.com ) for support!
+<p align="left">
+<a href="https://www.browserstack.com">
+  <img src="https://www.browserstack.com/images/layout/browserstack-logo-600x315.png" height="80" />
+</a>
+</p>
