@@ -73,7 +73,7 @@ function terminateAct()
   var con = new wConsequence();
 
   if( self._shellOptions.child.killed )
-  con.error( _.err( "Process is not running" ) );
+  con.error( _.err( 'Process is not running' ) );
   else
   {
     try
@@ -103,6 +103,7 @@ function _plistPathGet()
   {
     self._plistPath = _.pathJoin( self._appPath.slice( 0, index + ins.length ), fileName );
   }
+
 }
 
 //
@@ -274,8 +275,6 @@ _.PlatformProvider = _.PlatformProvider || Object.create( null );
 _.PlatformProvider.Abstract = Self;
 
 if( typeof module !== 'undefined' )
-{
-  module[ 'exports' ] = Self;
-}
+module[ 'exports' ] = Self;
 
 })();
