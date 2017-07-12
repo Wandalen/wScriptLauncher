@@ -46,7 +46,10 @@ function runAct()
     var con = new wConsequence();
     var profilePath = _.pathResolve( __dirname, '../../../../tmp.tmp/chrome' );
     //!!! add automatic chrome path finding
-    self._appPath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+    var pathFinder = require( 'lighthouse/chrome-launcher/chrome-finder' );
+    var chromePaths = pathFinder[ process.platform ]();
+    self._appPath = chromePaths[ 0 ];
+    // self._appPath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
     self._flags =
     [
       `--no-first-run`,

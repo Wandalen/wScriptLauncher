@@ -36,7 +36,7 @@ function init( o )
   if( self.verbosity > 1 )
   logger.log( 'new',_.strTypeOf( self ) );
 
-  self._headlessNoFocus = self.headless && self.allowPlistEdit;
+  self._headlessNoFocus = process.platform === 'darwin' && self.headless && self.allowPlistEdit;
 
   process.on( 'SIGINT', function()
   {
