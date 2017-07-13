@@ -48,23 +48,38 @@ function runAct()
     '-profile',
     profilePath
   ]
-  .join( ' ' );
+
+  if( _.objectIs( _.fileProvider.fileStat( profilePath ) ) )
+  _.fileProvider.fileDelete( profilePath );
 
   _.fileProvider.directoryMake( profilePath );
-
-  // self._shellOptions =
-  // {
-  //   mode : 'spawn',
-  //   code : firefoxPath + ' ' + args,
-  //   outputPiping : 0,
-  //   verbosity : 0
-  // }
-
 
   if( self._headlessNoFocus )
   self._plistEdit();
 
-  var con = self._shell();
+  var con = new wConsequence().give();
+
+  if( self.headless && process.platform === 'linux' )
+  {
+    var display = self._xvfbDisplayGet();
+    con.doThen( () => self._xvfbDisplaySet( display ) );
+    con.doThen( () => self._flags.push( `--display=:${display}` ) );
+  }
+
+  con.doThen( function()
+  {
+    self._shellOptions =
+    {
+      mode : 'spawn',
+      code : self._appPath + ' ' + self._flags.join( ' ' ),
+      // stdio : 'ignore',
+      outputPiping : 1,
+      verbosity : self.verbosity,
+    }
+
+    return self._shell()
+  })
+
 
   if( self._plistChanged )
   con.doThen( () => self._plistRestore() );
