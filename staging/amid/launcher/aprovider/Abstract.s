@@ -206,8 +206,6 @@ _.PlatformProvider = _.PlatformProvider || Object.create( null );
 _.PlatformProvider.Abstract = Self;
 
 if( typeof module !== 'undefined' )
-{
-  module[ 'exports' ] = Self;
-}
+module[ 'exports' ] = Self;
 
 })();
