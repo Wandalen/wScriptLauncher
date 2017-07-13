@@ -8,6 +8,8 @@ if( typeof module !== 'undefined' )
   if( !wTools.PlatformProvider.Abstract )
   require( './PlatformProviderAbstract.s' );
 
+  if( process.platform === 'darwin' )
+  var plist = require( 'plist' );
 }
 
 var _ = wTools;
@@ -140,12 +142,6 @@ function _plistEdit()
   if( !_.strIs( self._plistPath ) )
   return;
 
-  var plist = require('plist');
-  self._plistBackupPath = self._plistPath + '.backup';
-
-  if( !_.fileProvider.fileStat( self._plistBackupPath ) )
-  _.fileProvider.fileCopy( self._plistBackupPath, self._plistPath );
-
   var raw = _.fileProvider.fileRead( self._plistPath );
   var list = plist.parse( raw );
   list.LSBackgroundOnly = true;
@@ -162,11 +158,18 @@ function _plistRestore()
 {
   var self = this;
 
-  if( _.fileProvider.fileStat( self._plistBackupPath ) )
+  if( _.fileProvider.fileStat( self._plistPath ) )
   {
-    _.fileProvider.fileCopy( self._plistPath, self._plistBackupPath );
-    _.fileProvider.fileDelete( self._plistBackupPath );
-    self._plistChanged = false;
+    var raw = _.fileProvider.fileRead( self._plistPath );
+    var list = plist.parse( raw );
+    if( _.definedIs( list[ 'LSBackgroundOnly' ] ) )
+    {
+      delete list[ 'LSBackgroundOnly' ];
+      raw = plist.build( list );
+      _.fileProvider.fileWrite( self._plistPath, raw );
+
+      self._plistChanged = false;
+    }
   }
 }
 

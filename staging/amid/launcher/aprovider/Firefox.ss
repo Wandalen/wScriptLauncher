@@ -40,6 +40,7 @@ function runAct()
   var self = this;
 
   var profilePath = _.pathResolve( __dirname, '../../../../tmp.tmp/firefox' );
+  var userJsPath = _.pathJoin( profilePath, 'user.js' );
 
   self._flags =
   [
@@ -49,15 +50,34 @@ function runAct()
     profilePath
   ]
 
-  if( _.objectIs( _.fileProvider.fileStat( profilePath ) ) )
-  _.fileProvider.fileDelete( profilePath );
+  function _createProfile()
+  {
+    var createProfile = self._appPath + ' -CreateProfile ' + ` "launcher ${profilePath}" `;
 
-  _.fileProvider.directoryMake( profilePath );
+    return _.shell( createProfile )
+    .doThen( function ()
+    {
+      var prefs =
+      [
+        'user_pref("browser.shell.checkDefaultBrowser", false );',
+        'user_pref("browser.sessionstore.resume_from_crash", false);',
+        'user_pref("browser.sessionstore.resume_session_once", false);'
+      ]
+      .join( '\n' );
+
+      _.fileProvider.fileWrite( userJsPath, prefs );
+    })
+  }
+
+  var con = new wConsequence().give();
+
+  /* if user.js doesn't exist -> create new profile and set user prefs. */
+
+  if( !_.objectIs( _.fileProvider.fileStat( userJsPath ) ) )
+  con.doThen( () => _createProfile() );
 
   if( self._headlessNoFocus )
   self._plistEdit();
-
-  var con = new wConsequence().give();
 
   if( self.headless && process.platform === 'linux' )
   {

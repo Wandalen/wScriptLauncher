@@ -46,11 +46,11 @@ function run()
 {
   var self = this;
 
-  process.on( 'SIGINT', function()
-  {
-    if( self._plistChanged )
-    self._plistRestore();
-  });
+  // process.on( 'SIGINT', function()
+  // {
+  //   if( self._plistChanged )
+  //   self._plistRestore();
+  // });
 
   return self.runAct();
 }
@@ -72,6 +72,9 @@ function terminateAct()
   var con = new wConsequence().give();
 
   con.doThen( () => self._shellOptions.child.kill( 'SIGINT' ) );
+
+  if( self._headlessNoFocus )
+  con.doThen( () => self._plistRestore() );
 
   if( self._xvfbDisplayPid )
   con.doThen( () => self._xvfbDisplayKill() );
@@ -115,7 +118,6 @@ function _shell()
   {
     self._shellOptions.child.on( 'close', function ()
     {
-      if( self._plistChanged )
       self._plistRestore();
     })
   })
@@ -147,7 +149,6 @@ var Restricts =
 {
   _shellOptions : null,
   _plistPath : null,
-  _plistBackupPath : null,
   _appPath : null,
   _flags : null,
   _plistChanged : false,
