@@ -46,8 +46,8 @@ function runAct()
 
   self._shellOptions =
   {
-    mode : 'shell',
-    stdio : [ null, null, null, 'ipc' ],
+    mode : 'spawn',
+    stdio : 'ignore',
     code : self._appPath + ' ' + launcherPath + ' ' + self._flags,
     outputPiping : 0,
     verbosity : self.verbosity,
@@ -60,17 +60,11 @@ function runAct()
   self._plistEdit();
 
   var con = self._shell();
-  con.got( function()
+  con.doThen( function()
   {
     if( self._plistChanged )
     self._plistRestore();
-
-    self._shellOptions.child.on( 'message', function( msg )
-    {
-      if( msg === 'ready' )
-      con.give();
-    });
- });
+  });
 
   return con;
 }
