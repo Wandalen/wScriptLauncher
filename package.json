@@ -14,7 +14,8 @@
   ],
   "scripts": {
     "test": "wtest staging",
-    "make_doc": "./doc.sh"
+    "make_doc": "./doc.sh",
+    "postinstall": "node ./postinstall.ss"
   },
   "repository": {
     "type": "git",
