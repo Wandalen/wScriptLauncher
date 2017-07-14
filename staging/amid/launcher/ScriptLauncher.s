@@ -197,7 +197,11 @@ function _serverLaunch( )
 
   app.get( '/options', function ( req, res )
   {
-    res.send({ terminatingAfter : self.terminatingAfter });
+    res.send
+    ({
+      terminatingAfter : self.terminatingAfter,
+      platform : self.platform 
+    });
   });
 
   app.get( '/terminate', function ( req, res )

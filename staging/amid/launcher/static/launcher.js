@@ -31,31 +31,24 @@ function init( o )
 
 function request( url, onResponse )
 {
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function ()
-    {
-      if ( xmlHttp.readyState == 4 && xmlHttp.status == 200 )
-      if( _.routineIs( onResponse ) )
-      onResponse( xmlHttp.responseText );
-    }
-    xmlHttp.open( "GET", url, true );
-    xmlHttp.send( null );
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.onreadystatechange = function ()
+  {
+    if ( xmlHttp.readyState == 4 && xmlHttp.status == 200 )
+    if( _.routineIs( onResponse ) )
+    onResponse( xmlHttp.responseText );
+  }
+  xmlHttp.open( "GET", url, true );
+  xmlHttp.send( null );
 }
 
-_global_.onbeforeunload = function terminate()
-{
-  var teminateUrl = _.urlJoin( self.parsedUrl.origin, 'terminate' );
-  request( teminateUrl );
-}
 
 function getScript()
 {
   var self = this;
   var con = new wConsequence();
+
   self.parsedUrl = _.urlParse( window.location.href );
-
-  //window closed -> terminate
-
 
   var requestUrl = _.urlJoin( self.parsedUrl.origin, 'script' )
   request( requestUrl, function ( data )
@@ -83,6 +76,13 @@ function run ()
   return self.getScript()
   .doThen( function ()
   {
+    if( self.options.platform !== 'firefox' )
+    _global_.onbeforeunload = function terminate()
+    {
+      var terminateUrl = _.urlJoin( self.parsedUrl.origin, 'terminate' );
+      request( terminateUrl );
+    }
+
     _.io = io;
     wLogger.rawOutput = true;
     self.loggerToServer = new wLoggerToServer({ url : window.location.href });
