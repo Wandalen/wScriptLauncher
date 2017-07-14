@@ -92,7 +92,7 @@ function runAct()
     {
       mode : 'spawn',
       code : self._appPath + ' ' + self._flags.join( ' ' ),
-      // stdio : 'ignore',
+      stdio : 'inherit',
       outputPiping : 1,
       verbosity : self.verbosity,
     }
