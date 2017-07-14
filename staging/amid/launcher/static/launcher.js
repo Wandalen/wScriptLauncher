@@ -42,6 +42,12 @@ function request( url, onResponse )
     xmlHttp.send( null );
 }
 
+_global_.onbeforeunload = function terminate()
+{
+  var teminateUrl = _.urlJoin( self.parsedUrl.origin, 'terminate' );
+  request( teminateUrl );
+}
+
 function getScript()
 {
   var self = this;
@@ -49,11 +55,7 @@ function getScript()
   self.parsedUrl = _.urlParse( window.location.href );
 
   //window closed -> terminate
-  _global_.onbeforeunload = function terminate()
-  {
-    var teminateUrl = _.urlJoin( self.parsedUrl.origin, 'terminate' );
-    request( teminateUrl );
-  }
+
 
   var requestUrl = _.urlJoin( self.parsedUrl.origin, 'script' )
   request( requestUrl, function ( data )
