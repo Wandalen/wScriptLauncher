@@ -60,11 +60,11 @@ function windowInit( )
 }
 
 app.on( 'ready', windowInit );
-app.on( 'browser-window-created', function ()
-{
-  if( _.routineIs( process.send ) )
-  process.send( 'ready' );
-})
+// app.on( 'browser-window-created', function ()
+// {
+//   if( _.routineIs( process.send ) )
+//   process.send( 'ready' );
+// })
 
 app.on( 'window-all-closed', function ()
 {

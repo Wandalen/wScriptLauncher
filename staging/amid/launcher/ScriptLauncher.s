@@ -98,12 +98,28 @@ function launch()
 
   self.launchDone.give();
 
+  var feedback = new wConsequence();
+
+  process.on( 'SIGINT', function()
+  {
+    /* terminate kills provider and server then reports feedback and shutdowns the launcher */
+
+    var con = self.terminate();
+
+    if( self.handlingFeedback )
+    con.doThen( () => feedback.give( self._provider ) );
+    else
+    self.launchDone.give();
+
+    self.launchDone.doThen( () => process.exit() );
+  });
+
   if( self.platform === 'node' )
   {
     self.launchDone
     .seal( self )
     .ifNoErrorThen( self._browserLaunch )
-    .ifNoErrorThen( () => self._provider );
+    .ifNoErrorThen( () => feedback.give( self._provider ) );
   }
   else
   {
@@ -117,16 +133,17 @@ function launch()
     })
     .ifNoErrorThen( self._serverLaunch )
     .ifNoErrorThen( self._browserLaunch )
-    .ifNoErrorThen( () => self._provider );
+    .ifNoErrorThen( () => feedback.give( self._provider ) );
   }
 
   if( self.handlingFeedback )
-  self.launchDone
+  feedback
   .got( function ( err,got )
   {
     if( err )
     throw _.errLog( err );
     logger.log( got );
+    self.launchDone.give();
   });
 
   return self.launchDone;
@@ -138,11 +155,15 @@ function terminate()
 {
   var self = this;
 
+  var con = new wConsequence().give();
+
   if( self._provider )
-  self._provider.terminate();
+  con.doThen( () => self._provider.terminate() );
 
   if( self.server && self.server.isRunning )
-  self.server.io.close( () => self.server.close() );
+  con.doThen( () => self.server.io.close( () => self.server.close() ) );
+
+  return con;
 }
 
 //
@@ -176,7 +197,11 @@ function _serverLaunch( )
 
   app.get( '/options', function ( req, res )
   {
-    res.send({ terminatingAfter : self.terminatingAfter });
+    res.send
+    ({
+      terminatingAfter : self.terminatingAfter,
+      platform : self.platform 
+    });
   });
 
   app.get( '/terminate', function ( req, res )

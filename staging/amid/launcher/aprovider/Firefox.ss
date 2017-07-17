@@ -40,6 +40,7 @@ function runAct()
   var self = this;
 
   var profilePath = _.pathResolve( __dirname, '../../../../tmp.tmp/firefox' );
+  var userJsPath = _.pathJoin( profilePath, 'user.js' );
 
   self._flags =
   [
@@ -48,23 +49,57 @@ function runAct()
     '-profile',
     profilePath
   ]
-  .join( ' ' );
 
-  _.fileProvider.directoryMake( profilePath );
+  function _createProfile()
+  {
+    var createProfile = self._appPath + ' -CreateProfile ' + ` "launcher ${profilePath}" `;
 
-  // self._shellOptions =
-  // {
-  //   mode : 'spawn',
-  //   code : firefoxPath + ' ' + args,
-  //   outputPiping : 0,
-  //   verbosity : 0
-  // }
+    return _.shell( createProfile )
+    .doThen( function ()
+    {
+      var prefs =
+      [
+        'user_pref("browser.shell.checkDefaultBrowser", false );',
+        'user_pref("browser.sessionstore.resume_from_crash", false);',
+        'user_pref("browser.sessionstore.resume_session_once", false);'
+      ]
+      .join( '\n' );
 
+      _.fileProvider.fileWrite( userJsPath, prefs );
+    })
+  }
+
+  var con = new wConsequence().give();
+
+  /* if user.js doesn't exist -> create new profile and set user prefs. */
+
+  if( !_.objectIs( _.fileProvider.fileStat( userJsPath ) ) )
+  con.doThen( () => _createProfile() );
 
   if( self._headlessNoFocus )
   self._plistEdit();
 
-  var con = self._shell();
+  if( self.headless && process.platform === 'linux' )
+  {
+    var display = self._xvfbDisplayGet();
+    con.doThen( () => self._xvfbDisplaySet( display ) );
+    con.doThen( () => self._flags.push( `--display=:${display}` ) );
+  }
+
+  con.doThen( function()
+  {
+    self._shellOptions =
+    {
+      mode : 'spawn',
+      code : self._appPath + ' ' + self._flags.join( ' ' ),
+      stdio : 'inherit',
+      outputPiping : 1,
+      verbosity : self.verbosity,
+    }
+
+    return self._shell()
+  })
+
 
   if( self._plistChanged )
   con.doThen( () => self._plistRestore() );

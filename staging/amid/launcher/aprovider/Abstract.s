@@ -38,13 +38,6 @@ function init( o )
 
   self._headlessNoFocus = process.platform === 'darwin' && self.headless && self.allowPlistEdit;
 
-  process.on( 'SIGINT', function()
-  {
-    if( self._plistChanged )
-    self._plistRestore();
-
-    process.exit();
-  });
 }
 
 //
@@ -52,6 +45,12 @@ function init( o )
 function run()
 {
   var self = this;
+
+  // process.on( 'SIGINT', function()
+  // {
+  //   if( self._plistChanged )
+  //   self._plistRestore();
+  // });
 
   return self.runAct();
 }
@@ -70,81 +69,17 @@ function terminateAct()
 {
   var self = this;
 
-  var con = new wConsequence();
+  var con = new wConsequence().give();
 
-  if( self._shellOptions.child.killed )
-  con.error( _.err( 'Process is not running' ) );
-  else
-  {
-    try
-    {
-      self._shellOptions.child.kill( 'SIGINT' )
-      con.give();
-    }
-    catch( err )
-    {
-      con.error( err );
-    }
-  }
+  con.doThen( () => self._shellOptions.child.kill( 'SIGINT' ) );
+
+  if( self._headlessNoFocus )
+  con.doThen( () => self._plistRestore() );
+
+  if( self._xvfbDisplayPid )
+  con.doThen( () => self._xvfbDisplayKill() );
 
   return con;
-}
-
-//
-
-function _plistPathGet()
-{
-  var self = this;
-
-  var ins = 'Contents';
-  var fileName = 'Info.plist';
-  var index = self._appPath.indexOf( ins );
-  if( index !== -1 )
-  {
-    self._plistPath = _.pathJoin( self._appPath.slice( 0, index + ins.length ), fileName );
-  }
-
-}
-
-//
-
-function _plistEdit()
-{
-  var self = this;
-
-  self._plistPathGet();
-
-  if( !_.strIs( self._plistPath ) )
-  return;
-
-  var plist = require('plist');
-  self._plistBackupPath = self._plistPath + '.backup';
-
-  if( !_.fileProvider.fileStat( self._plistBackupPath ) )
-  _.fileProvider.fileCopy( self._plistBackupPath, self._plistPath );
-
-  var raw = _.fileProvider.fileRead( self._plistPath );
-  var list = plist.parse( raw );
-  list.LSBackgroundOnly = true;
-  raw = plist.build( list );
-
-  _.fileProvider.fileWrite( self._plistPath, raw );
-
-  self._plistChanged = true;
-}
-
-//
-
-function _plistRestore()
-{
-  var self = this;
-
-  if( _.fileProvider.fileStat( self._plistBackupPath ) )
-  {
-    _.fileProvider.fileCopy( self._plistPath, self._plistBackupPath );
-    _.fileProvider.fileDelete( self._plistBackupPath );
-    self._plistChanged = false;
-  }
 }
 
 //
@@ -183,7 +118,6 @@ function _shell()
   {
     self._shellOptions.child.on( 'close', function ()
     {
-      if( self._plistChanged )
       self._plistRestore();
     })
   })
@@ -200,7 +134,7 @@ var Composes =
   verbosity : 1,
   osxOpenOptions : null,
   usingOsxOpen : 0,
-  allowPlistEdit : 1
+  allowPlistEdit : 1,
 }
 
 var Aggregates =
@@ -215,11 +149,11 @@ var Restricts =
 {
   _shellOptions : null,
   _plistPath : null,
-  _plistBackupPath : null,
   _appPath : null,
   _flags : null,
   _plistChanged : false,
   _headlessNoFocus : false,
+  _xvfbDisplayPid : null
 }
 
 var Statics =
@@ -243,9 +177,6 @@ var Proto =
   terminateAct : terminateAct,
 
   _shell : _shell,
-  _plistPathGet : _plistPathGet,
-  _plistEdit : _plistEdit,
-  _plistRestore : _plistRestore,
 
   // relationships
 
