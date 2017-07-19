@@ -52,23 +52,6 @@ function run()
   //   self._plistRestore();
   // });
 
-  if( self.headless && process.platform === 'linux' )
-  {
-    var which =  require( 'which' );
-    which( 'Xvfb', function ( notInstalled )
-    {
-      if( notInstalled )
-      {
-        logger.warn
-        (
-          `Xvfb is not installed on your system, headless feature will be disabled.
-           Please install xvfb to run provider in headless mode`
-        );
-        self.headless = false;
-      }
-    });
-  }
-
   return self.runAct();
 }
 

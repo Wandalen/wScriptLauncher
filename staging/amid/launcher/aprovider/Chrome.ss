@@ -68,14 +68,14 @@ function runAct()
 
     self._flags = self._flags.join( ' ' );
 
-    // self._shellOptions =
-    // {
-    //   mode : 'shell',
-    //   code : chromePath + ' ' + flags,
-    //   stdio : 'ignore',
-    //   outputPiping : 0,
-    //   verbosity : self.verbosity,
-    // }
+    self._shellOptions =
+    {
+      mode : 'spawn',
+      code : self._appPath + ' ' + self._flags,
+      stdio : 'ignore',
+      outputPiping : 0,
+      verbosity : self.verbosity,
+    }
 
     debugger;
     if( self._headlessNoFocus )
