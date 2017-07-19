@@ -103,9 +103,10 @@ function _shell()
       code = self._appPath + ' ' + self._flags;
     }
 
+    var mode = process.platform === 'darwin' ? 'shell' : 'spawn';
     self._shellOptions =
     {
-      mode : 'shell',
+      mode : mode,
       code : code,
       stdio : 'ignore',
       outputPiping : 0,
