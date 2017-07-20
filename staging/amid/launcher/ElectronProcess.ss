@@ -50,7 +50,7 @@ function windowInit( )
 
   window.loadURL( args.url );
 
-  window.webContents.openDevTools();
+  //window.webContents.openDevTools();
 
   window.on( 'closed', function ()
   {

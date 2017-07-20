@@ -171,23 +171,26 @@ function terminate()
 function _serverLaunch( )
 {
   var self = this;
+  var pathNativize = _.fileProvider.pathNativize;
   var con = new wConsequence();
   var rootDir = _.pathResolve( __dirname, '../../..' );
+  rootDir = ( rootDir );
+  self.filePath = pathNativize( self.filePath );
   var script = _.fileProvider.fileRead( self.filePath );
   var express = require( 'express' );
   var app = express();
   self.server = require( 'http' ).createServer( app );
   self.server.io = require( 'socket.io' )( self.server );
 
-  var statics = _.pathJoin( rootDir, 'staging/amid/launcher/static' );
-  var modules = _.pathJoin( rootDir, 'node_modules' );
+  var statics = pathNativize( _.pathJoin( rootDir, 'staging/amid/launcher/static' ) );
+  var modules = pathNativize( _.pathJoin( rootDir, 'node_modules' ) );
 
   app.use('/modules', express.static( modules ));
   app.use('/static', express.static( statics ));
 
   app.get( '/', function ( req, res )
   {
-    res.sendFile( _.pathJoin( statics, 'index.html' ) );
+    res.sendFile( pathNativize( _.pathJoin( statics, 'index.html' ) ) );
   });
 
   app.get( '/script', function ( req, res )

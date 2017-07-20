@@ -45,6 +45,7 @@ function runAct()
   {
     var con = new wConsequence();
     var profilePath = _.pathResolve( __dirname, '../../../../tmp.tmp/chrome' );
+    profilePath = _.fileProvider.pathNativize( profilePath );
     //!!! add automatic chrome path finding
     var pathFinder = require( 'lighthouse/chrome-launcher/chrome-finder' );
     var chromePaths = pathFinder[ process.platform ]();
@@ -52,19 +53,30 @@ function runAct()
     // self._appPath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
     self._flags =
     [
-      `--no-first-run`,
-      `--no-default-browser-check`,
+      '--no-first-run',
+      '--no-default-browser-check',
       // `--no-startup-window`,
-      `--disable-component-extensions-with-background-pages`,
-      `--disable-infobars`,
-      `--disable-gl-drawing-for-tests`,
+      '--disable-component-extensions-with-background-pages',
+      '--disable-infobars',
       `--remote-debugging-port=${ debuggingPort }`,
       `--user-data-dir=${ profilePath }`,
       self.url
     ];
 
+    if( process.platform != 'win32' )
+    self._flags.push( '--disable-gl-drawing-for-tests' );
+
     if( self.headless )
-    self._flags.unshift( '--headless', '--disable-gpu' );
+    {
+      var headlessFlags =
+      [
+        '--headless',
+        '--disable-gpu',
+        `--window-position=-9999,0`,
+        `--window-size=0,0`
+      ]
+    }
+    self._flags.unshift.apply( self._flags, headlessFlags );
 
     //self._flags = self._flags.join( ' ' );
 

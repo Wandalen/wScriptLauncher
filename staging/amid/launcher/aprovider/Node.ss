@@ -45,16 +45,19 @@ function runAct()
     if( err )
     throw _.err( err );
 
-    self._appPath = path;
+    self._appPath = _.fileProvider.pathNativize( path );
+    self._flags = [ self.url ];
     con.give();
   })
+
 
   con.doThen( function ()
   {
     self._shellOptions =
     {
       mode : 'spawn',
-      code : self._appPath + ' ' + self.url,
+      code : self._appPath,
+      args : self._flags,
       stdio : 'pipe',
       outputPiping : 1,
       verbosity : self.verbosity,
