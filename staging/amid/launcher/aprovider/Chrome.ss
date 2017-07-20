@@ -66,7 +66,7 @@ function runAct()
     if( self.headless )
     self._flags.unshift( '--headless', '--disable-gpu' );
 
-    self._flags = self._flags.join( ' ' );
+    //self._flags = self._flags.join( ' ' );
 
     // self._shellOptions =
     // {
@@ -81,7 +81,7 @@ function runAct()
     if( self._headlessNoFocus )
     self._plistEdit();
 
-    self._appPath = _.strReplaceAll( self._appPath,' ', '\\ ' );
+    //self._appPath = _.strReplaceAll( self._appPath,' ', '\\ ' );
 
     var con = self._shell();
 

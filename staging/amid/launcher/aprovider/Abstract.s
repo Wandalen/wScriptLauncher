@@ -91,23 +91,23 @@ function _shell()
 
   if( !self._shellOptions )
   {
-    if( self.usingOsxOpen )
-    {
-      if( !self.osxOpenOptions )
-      self.osxOpenOptions = '-W -n -j -g -a';
+    // if( self.usingOsxOpen )
+    // {
+    //   if( !self.osxOpenOptions )
+    //   self.osxOpenOptions = '-W -n -j -g -a';
+    //
+    //   code = 'open ' + self.osxOpenOptions + ' ' + self._appPath + ' --args ' + self._flags
+    // }
+    // else
+    // {
+    //   code = self._appPath + ' ' + self._flags.join( ' ' );
+    // }
 
-      code = 'open ' + self.osxOpenOptions + ' ' + self._appPath + ' --args ' + self._flags
-    }
-    else
-    {
-      code = self._appPath + ' ' + self._flags;
-    }
-
-    var mode = process.platform === 'darwin' ? 'shell' : 'spawn';
     self._shellOptions =
     {
-      mode : mode,
-      code : code,
+      mode : 'spawn',
+      code : self._appPath,
+      args : self._flags,
       stdio : 'ignore',
       outputPiping : 0,
       verbosity : self.verbosity,

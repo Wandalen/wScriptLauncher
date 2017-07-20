@@ -86,20 +86,7 @@ function runAct()
     con.doThen( () => self._flags.push( `--display=:${display}` ) );
   }
 
-  con.doThen( function()
-  {
-    self._shellOptions =
-    {
-      mode : 'spawn',
-      code : self._appPath + ' ' + self._flags.join( ' ' ),
-      stdio : 'inherit',
-      outputPiping : 1,
-      verbosity : self.verbosity,
-    }
-
-    return self._shell()
-  })
-
+  con.doThen( () => self._shell() );
 
   if( self._plistChanged )
   con.doThen( () => self._plistRestore() );

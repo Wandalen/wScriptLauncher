@@ -55,6 +55,7 @@ function runAct()
     {
       mode : 'spawn',
       code : self._appPath + ' ' + self.url,
+      stdio : 'pipe',
       outputPiping : 1,
       verbosity : self.verbosity,
     }
