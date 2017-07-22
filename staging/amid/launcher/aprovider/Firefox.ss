@@ -40,7 +40,9 @@ function runAct()
   var self = this;
 
   var profilePath = _.pathResolve( __dirname, '../../../../tmp.tmp/firefox' );
+  profilePath = _.fileProvider.pathNativize( profilePath );
   var userJsPath = _.pathJoin( profilePath, 'user.js' );
+  userJsPath = _.fileProvider.pathNativize( userJsPath );
 
   self._flags =
   [
@@ -52,6 +54,7 @@ function runAct()
 
   function _createProfile()
   {
+    self._appPath = _.fileProvider.pathNativize( self._appPath );
     var createProfile = self._appPath + ' -CreateProfile ' + ` "launcher ${profilePath}" `;
 
     return _.shell( createProfile )
@@ -86,20 +89,7 @@ function runAct()
     con.doThen( () => self._flags.push( `--display=:${display}` ) );
   }
 
-  con.doThen( function()
-  {
-    self._shellOptions =
-    {
-      mode : 'spawn',
-      code : self._appPath + ' ' + self._flags.join( ' ' ),
-      stdio : 'inherit',
-      outputPiping : 1,
-      verbosity : self.verbosity,
-    }
-
-    return self._shell()
-  })
-
+  con.doThen( () => self._shell() );
 
   if( self._plistChanged )
   con.doThen( () => self._plistRestore() );

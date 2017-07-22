@@ -96,7 +96,7 @@ function launch()
 {
   var self = this;
 
-  self.launchDone.give();
+  self.launchDone = self._xvfbCheck();
 
   var feedback = new wConsequence();
 
@@ -171,23 +171,26 @@ function terminate()
 function _serverLaunch( )
 {
   var self = this;
+  var pathNativize = _.fileProvider.pathNativize;
   var con = new wConsequence();
   var rootDir = _.pathResolve( __dirname, '../../..' );
+  rootDir = ( rootDir );
+  self.filePath = pathNativize( self.filePath );
   var script = _.fileProvider.fileRead( self.filePath );
   var express = require( 'express' );
   var app = express();
   self.server = require( 'http' ).createServer( app );
   self.server.io = require( 'socket.io' )( self.server );
 
-  var statics = _.pathJoin( rootDir, 'staging/amid/launcher/static' );
-  var modules = _.pathJoin( rootDir, 'node_modules' );
+  var statics = pathNativize( _.pathJoin( rootDir, 'staging/amid/launcher/static' ) );
+  var modules = pathNativize( _.pathJoin( rootDir, 'node_modules' ) );
 
   app.use('/modules', express.static( modules ));
   app.use('/static', express.static( statics ));
 
   app.get( '/', function ( req, res )
   {
-    res.sendFile( _.pathJoin( statics, 'index.html' ) );
+    res.sendFile( pathNativize( _.pathJoin( statics, 'index.html' ) ) );
   });
 
   app.get( '/script', function ( req, res )
@@ -200,7 +203,7 @@ function _serverLaunch( )
     res.send
     ({
       terminatingAfter : self.terminatingAfter,
-      platform : self.platform 
+      platform : self.platform
     });
   });
 
@@ -304,6 +307,36 @@ function _browserLaunch()
   self._provider._shellOptions.child.on( 'close', () => self.terminate() );
 
   return result;
+}
+
+//
+
+function _xvfbCheck()
+{
+  var self = this;
+
+  var con = new wConsequence().give();
+
+  if( process.platform !== 'linux' || self.platform != 'firefox' || !self.headless )
+  return con;
+
+  con.got( function ()
+  {
+    var which =  require( 'which' );
+    which( 'Xvfb', function ( notInstalled )
+    {
+      if( notInstalled )
+      {
+        var msg = 'Xvfb is not installed on your system, headless feature will be disabled.Please install xvfb to run provider in headless mode.'
+
+        logger.log( _.strColor.bg( _.strColor.fg( msg, 'red' ) , 'yellow' ) );
+        self.headless = false;
+      }
+      con.give();
+    });
+  })
+
+  return con;
 }
 
 //
@@ -417,6 +450,7 @@ var Proto =
   _serverLaunch : _serverLaunch,
   _scriptPrepare : _scriptPrepare,
   _browserLaunch : _browserLaunch,
+  _xvfbCheck : _xvfbCheck,
 
 
   //

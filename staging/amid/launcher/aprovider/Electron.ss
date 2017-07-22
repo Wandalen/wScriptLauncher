@@ -40,18 +40,24 @@ function runAct()
   self._appPath = require( 'electron' );
 
   var launcherPath  = _.pathResolve( __dirname, '../ElectronProcess.ss' );
+  launcherPath  = _.fileProvider.pathNativize( launcherPath );
 
   var port = _.urlParse( self.url ).port;
-  self._flags = `headless : ${self.headless} port : ${port}`;
+  self._flags =
+  [
+    launcherPath,
+    `headless : ${self.headless}`,
+    `port : ${port}`
+  ];
 
-  self._shellOptions =
-  {
-    mode : 'spawn',
-    stdio : 'ignore',
-    code : self._appPath + ' ' + launcherPath + ' ' + self._flags,
-    outputPiping : 0,
-    verbosity : self.verbosity,
-  }
+  // self._shellOptions =
+  // {
+  //   mode : 'spawn',
+  //   stdio : 'ignore',
+  //   code : self._appPath + ' ' + launcherPath + ' ' + self._flags,
+  //   outputPiping : 0,
+  //   verbosity : self.verbosity,
+  // }
 
   //!!! _.shell: Consequence gives message on o.child close event?
 
