@@ -97,8 +97,11 @@ function runAct()
 
     var con = self._shell();
 
-    if( self._plistChanged )
-    con.doThen( () => self._plistRestore() );
+    con.doThen( function()
+    {
+      if( self._plistChanged )
+      self._plistRestore();
+    });
 
     return con;
   }
