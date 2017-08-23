@@ -466,7 +466,7 @@ var Proto =
 
 //
 
-_.protoMake
+_.prototypeMake
 ({
   cls : Self,
   parent : Parent,
