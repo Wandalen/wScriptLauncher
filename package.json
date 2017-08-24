@@ -37,6 +37,7 @@
     "electron": "",
     "firefox-location": "",
     "plist": "",
+    "resolve": "",
     "get-port": ""
   },
   "devDependencies": {
