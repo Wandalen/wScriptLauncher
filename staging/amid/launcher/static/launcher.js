@@ -2,7 +2,6 @@
 
 'use strict';
 
-
 var _ = wTools;
 var Parent = null;
 var Self = function Launcher( o )
@@ -53,7 +52,13 @@ function getScript()
   var requestUrl = _.urlJoin( self.parsedUrl.origin, 'script' )
   request( requestUrl, function ( data )
   {
-     self.script = _.routineMake({ code : data, prependingReturn : 0 } );
+     data = JSON.parse( data );
+     self.script =
+     {
+       module : _.routineMake({ code : data.script, prependingReturn : 0 } ),
+       realPath : data.filePath
+     };
+     RemoteRequire.map[ self.script.realPath ] = self.script;
 
      //get launch options from server
      var requestUrl = _.urlJoin( self.parsedUrl.origin, 'options' )
@@ -90,7 +95,12 @@ function run ()
     self.loggerToServer.inputFrom( console );
   })
   .doThen( () => self.loggerToServer.connect() )
-  .doThen( () => self.script() )
+  .doThen( () =>
+  {
+    RemoteRequire.currentPath = self.script.realPath;
+    console.log( RemoteRequire )
+    self.script.module();
+  })
   .doThen( function ()
   {
     if( self.options.terminatingAfter )
