@@ -145,9 +145,9 @@ function _plistEdit()
   var raw = _.fileProvider.fileRead( self._plistPath );
   var list = plist.parse( raw );
   list.LSBackgroundOnly = true;
-  raw = plist.build( list );
+  list = plist.build( list );
 
-  _.fileProvider.fileWrite( self._plistPath, raw );
+  _.fileProvider.fileWrite( self._plistPath, list );
 
   self._plistChanged = true;
 }
@@ -165,8 +165,8 @@ function _plistRestore()
     if( _.definedIs( list[ 'LSBackgroundOnly' ] ) )
     {
       delete list[ 'LSBackgroundOnly' ];
-      raw = plist.build( list );
-      _.fileProvider.fileWrite( self._plistPath, raw );
+      list = plist.build( list );
+      _.fileProvider.fileWrite( self._plistPath, list );
 
       self._plistChanged = false;
     }

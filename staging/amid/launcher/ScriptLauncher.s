@@ -303,8 +303,12 @@ function _browserLaunch()
   self._provider = provider( providerOptions );
   var result = self._provider.run();
 
+  /* !!!workaround for chrome, child.on( 'close' ) wont work for some reason */
+  if( self.platform === 'chrome' )
+  result.doThen( () => { self.terminate() } );
+
   if( self._provider._shellOptions )
-  self._provider._shellOptions.child.on( 'close', () => self.terminate() );
+  self._provider._shellOptions.child.on( 'close', () =>  self.terminate() );
 
   return result;
 }
@@ -466,7 +470,7 @@ var Proto =
 
 //
 
-_.protoMake
+_.prototypeMake
 ({
   cls : Self,
   parent : Parent,
