@@ -4,6 +4,7 @@
 
 var _ = wTools;
 var Parent = null;
+var RemoteRequire = new wRemoteRequireClient();
 var Self = function Launcher( o )
 {
   if( !( this instanceof Self ) )
@@ -55,7 +56,7 @@ function getScript()
      data = JSON.parse( data );
      self.script =
      {
-       module : _.routineMake({ code : data.script, prependingReturn : 0 } ),
+       module : _.routineMake({ code : data.script, prependingReturn : 0, usingStrict : 0 } ),
        realPath : data.filePath
      };
      RemoteRequire.map[ self.script.realPath ] = self.script;
@@ -98,7 +99,7 @@ function run ()
   .doThen( () =>
   {
     RemoteRequire.currentPath = self.script.realPath;
-    console.log( RemoteRequire )
+    debugger
     self.script.module();
   })
   .doThen( function ()
@@ -161,7 +162,7 @@ var Proto =
 
 //
 
-_.prototypeMake
+_.classMake
 ({
   cls : Self,
   parent : Parent,
@@ -174,6 +175,8 @@ _.prototypeMake
 
 
 _global_[ Self.nameShort ] = Self;
+_global_[ 'RemoteRequire' ] = RemoteRequire;
+_global_[ 'require' ] = RemoteRequire.require.bind( RemoteRequire );
 _global_[ Self.nameShort ].run();
 
 })();
