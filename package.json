@@ -38,7 +38,8 @@
     "firefox-location": "",
     "plist": "",
     "resolve": "",
-    "get-port": ""
+    "get-port": "",
+    "wremoterequire":""
   },
   "devDependencies": {
     "wTesting": ""

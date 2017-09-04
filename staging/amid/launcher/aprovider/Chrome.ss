@@ -204,7 +204,7 @@ var Proto =
 
 //
 
-_.prototypeMake
+_.classMake
 ({
   cls : Self,
   parent : Parent,

@@ -13,6 +13,7 @@ if( typeof module !== 'undefined' )
   wTools.include( 'wCopyable' );
 
   require( './Tools.ss' );
+  require( 'wremoterequire' );
 
   require( './aprovider/Abstract.s' );
   require( './aprovider/AdvancedMixin.s' );
@@ -160,6 +161,9 @@ function terminate()
   if( self._provider )
   con.doThen( () => self._provider.terminate() );
 
+  if( self.remoteRequireServer )
+  con.doThen( () => self.remoteRequireServer.stop() )
+
   if( self.server && self.server.isRunning )
   con.doThen( () => self.server.io.close( () => self.server.close() ) );
 
@@ -181,66 +185,19 @@ function _serverLaunch( )
   var app = express();
   self.server = require( 'http' ).createServer( app );
   self.server.io = require( 'socket.io' )( self.server );
-  var resolve = require( 'resolve' );
+
+  self.remoteRequireServer = _.RemoteRequireServer
+  ({
+    app : app,
+    verbosity : self.verbosity,
+  });
+  self.remoteRequireServer.start();
 
   var statics = pathNativize( _.pathJoin( rootDir, 'staging/amid/launcher/static' ) );
   var modules = pathNativize( _.pathJoin( rootDir, 'node_modules' ) );
 
   app.use( '/modules', express.static( modules ));
   app.use('/static', express.static( statics ));
-  app.post( '/require', function( req, res )
-  {
-    var data = '';
-    req.on( 'data', ( chunk ) => data += chunk.toString() )
-    req.on( 'end', () =>
-    {
-      data = JSON.parse( data );
-      var filePath = _.urlParse( data.from ).pathname;
-
-      // console.log( filePath  )
-
-      var resolved = null;
-
-      if( _.strBegins( filePath, '/static' ) )
-      {
-        filePath = _.pathJoin( statics, _.strRemoveBegin( filePath, '/static/' ) );
-      }
-
-      if( _.strBegins( filePath, '/modules' ) )
-      {
-        filePath = _.pathJoin( modules, _.strRemoveBegin( filePath, '/modules/' ) );
-      }
-
-      var baseDir = _.pathDir( filePath );
-
-      if( !resolved )
-      resolved = _.pathResolve( baseDir, data.file );
-
-
-      if( !_.fileProvider.fileStat( resolved ) )
-      {
-        resolved = null;
-
-        try
-        {
-          resolved = resolve.sync( data.file, { basedir: baseDir });
-        }
-        catch( err )
-        {
-        }
-      }
-
-      if( resolved )
-      {
-        var response = { file : _.fileProvider.fileRead( resolved ), path : resolved };
-        res.send( JSON.stringify( response ) );
-      }
-      else
-      res.send( { file : '', path : null } );
-
-    })
-    // res.sendFile( p );
-  });
 
   app.get( '/', function ( req, res )
   {
@@ -479,6 +436,7 @@ var Restricts =
   launchDone : new wConsequence(),
   server : null,
   serverPort : null,
+  remoteRequireServer : null,
 
   _script : null,
   _provider : null,
@@ -525,7 +483,7 @@ var Proto =
 
 //
 
-_.prototypeMake
+_.classMake
 ({
   cls : Self,
   parent : Parent,
