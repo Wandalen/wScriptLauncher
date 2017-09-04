@@ -189,7 +189,7 @@ function _serverLaunch( )
   self.remoteRequireServer = _.RemoteRequireServer
   ({
     app : app,
-    verbosity : 3,
+    verbosity : self.verbosity,
   });
   self.remoteRequireServer.start();
 
