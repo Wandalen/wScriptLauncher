@@ -139,8 +139,13 @@ function _plistEdit()
 
   self._plistPathGet();
 
+  var tmpPath = _.pathResolve( __dirname, '../../../../tmp.tmp' );
+  self.plistBackupPath = _.pathJoin( tmpPath, 'plistBackup.plist' );
+
   if( !_.strIs( self._plistPath ) )
   return;
+
+  _.fileProvider.fileCopy( self.plistBackupPath, self._plistPath );
 
   var raw = _.fileProvider.fileRead( self._plistPath );
   var list = plist.parse( raw );
@@ -160,16 +165,27 @@ function _plistRestore()
 
   if( _.fileProvider.fileStat( self._plistPath ) )
   {
-    var raw = _.fileProvider.fileRead( self._plistPath );
-    var list = plist.parse( raw );
-    if( _.definedIs( list[ 'LSBackgroundOnly' ] ) )
+    // var raw = _.fileProvider.fileRead( self._plistPath );
+    // var list = plist.parse( raw );
+    // if( _.definedIs( list[ 'LSBackgroundOnly' ] ) )
+    // {
+    //   delete list[ 'LSBackgroundOnly' ];
+    //   list = plist.build( list );
+    //   _.fileProvider.fileWrite( self._plistPath, list );
+
+    //   self._plistChanged = false;
+    // }
+
+    if( self._plistChanged )
     {
-      delete list[ 'LSBackgroundOnly' ];
-      list = plist.build( list );
-      _.fileProvider.fileWrite( self._plistPath, list );
+      _.fileProvider.fileCopy( self._plistPath, self.plistBackupPath );
+
+      if( _.fileProvider.fileStat( self.plistBackupPath ) )
+      _.fileProvider.fileDelete( self.plistBackupPath );
 
       self._plistChanged = false;
     }
+
   }
 }
 
@@ -179,6 +195,7 @@ function _plistRestore()
 
 var Composes =
 {
+  plistBackupPath : null
 }
 
 var Aggregates =
