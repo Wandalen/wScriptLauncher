@@ -190,6 +190,7 @@ function _serverLaunch( )
   ({
     app : app,
     verbosity : self.verbosity,
+    rootDir : _.pathDir( self.filePath )
   });
   self.remoteRequireServer.start();
 
@@ -206,8 +207,8 @@ function _serverLaunch( )
 
   app.get( '/script', function ( req, res )
   {
-    var _script = { script :  script, filePath : self.filePath };
-    res.send( JSON.stringify( _script ) );
+    var scriptPath = _.pathDot( _.pathRelative( self.remoteRequireServer.rootDir, self.filePath ) );
+    res.send( JSON.stringify( { filePath : scriptPath } ) );
   });
 
   app.get( '/options', function ( req, res )

@@ -53,13 +53,7 @@ function getScript()
   var requestUrl = _.urlJoin( self.parsedUrl.origin, 'script' )
   request( requestUrl, function ( data )
   {
-     data = JSON.parse( data );
-     self.script =
-     {
-       module : _.routineMake({ code : data.script, prependingReturn : 0, usingStrict : 0 } ),
-       realPath : data.filePath
-     };
-     RemoteRequire.map[ self.script.realPath ] = self.script;
+     self.script = JSON.parse( data );
 
      //get launch options from server
      var requestUrl = _.urlJoin( self.parsedUrl.origin, 'options' )
@@ -98,9 +92,8 @@ function run ()
   .doThen( () => self.loggerToServer.connect() )
   .doThen( () =>
   {
-    RemoteRequire.currentPath = self.script.realPath;
     debugger
-    self.script.module();
+    RemoteRequire.require( self.script.filePath );
   })
   .doThen( function ()
   {
@@ -176,7 +169,6 @@ _.classMake
 
 _global_[ Self.nameShort ] = Self;
 _global_[ 'RemoteRequire' ] = RemoteRequire;
-_global_[ 'require' ] = RemoteRequire.require.bind( RemoteRequire );
 _global_[ Self.nameShort ].run();
 
 })();
