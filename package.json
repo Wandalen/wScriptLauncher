@@ -5,11 +5,11 @@
   "author": "Kostiantyn Wandalen <wtory.net@domainsbyproxy.com>",
   "license": "MIT",
   "bin": {
-    "launcher": "staging/amid/launcher/ScriptLauncher.s"
+    "launcher": "staging/dwtools/amid/launcher/ScriptLauncher.s"
   },
-  "main": "staging/amid/launcher/ScriptLauncher.s",
+  "main": "staging/dwtools/amid/launcher/ScriptLauncher.s",
   "files": [
-    "staging/amid",
+    "staging/dwtools/amid",
     "production"
   ],
   "scripts": {
@@ -42,7 +42,8 @@
     "wremoterequire":""
   },
   "devDependencies": {
-    "wTesting": ""
+    "wTesting": "",
+    "wscriptlauncher": "."
   },
   "keywords": [
     "wTools"

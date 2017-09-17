@@ -1,7 +1,6 @@
+
 if( typeof module !== 'undefined' )
-{
-  require( '../staging/amid/launcher/ScriptLauncher.s' );
-}
+require( 'wscriptlauncher' );
 
 var _ = wTools;
 

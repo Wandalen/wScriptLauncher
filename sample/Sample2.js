@@ -2,7 +2,7 @@
 
 if( typeof module !== 'undefined' )
 {
-  var browserify = require('browserify');
+  var browserify = require( 'browserify' );
   var browser = require( 'browser-run' );
 }
 

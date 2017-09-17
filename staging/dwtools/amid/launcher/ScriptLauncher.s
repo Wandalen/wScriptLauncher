@@ -194,7 +194,7 @@ function _serverLaunch( )
   });
   self.remoteRequireServer.start();
 
-  var statics = pathNativize( _.pathJoin( rootDir, 'staging/amid/launcher/static' ) );
+  var statics = pathNativize( _.pathJoin( rootDir, 'staging/dwtools/amid/launcher/static' ) );
   var modules = pathNativize( _.pathJoin( rootDir, 'node_modules' ) );
 
   app.use( '/modules', express.static( modules ));
