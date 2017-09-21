@@ -9,7 +9,7 @@
   },
   "main": "staging/dwtools/amid/launcher/ScriptLauncher.s",
   "files": [
-    "staging/dwtools/amid",
+    "staging/dwtools/amid/launcher",
     "production"
   ],
   "scripts": {
