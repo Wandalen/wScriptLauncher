@@ -98,8 +98,14 @@ function run ()
       RemoteRequire.require( files[ i ] );
     }
 
-    if( _.mapOwnKeys( window.wTests ).length > 0 )
+    var testSuites = _.mapOwnKeys( window.wTests );
+    if( testSuites.length > 0 )
     {
+      testSuites.forEach( ( suitName ) =>
+      {
+        window.wTests[ suitName ].silencing = 0;
+        window.wTests[ suitName ].verbosity = 5;
+      })
       self.loggerToServer.permanentStyle = null;
       self.loggerToServer.inputFrom( _.Tester.logger, { combining : 'rewrite' } );
       return _.Tester.testAll();
