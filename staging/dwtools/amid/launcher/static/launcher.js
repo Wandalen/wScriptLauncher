@@ -92,8 +92,13 @@ function run ()
   .doThen( () => self.loggerToServer.connect() )
   .doThen( () =>
   {
-    debugger
     RemoteRequire.require( self.script.filePath );
+    if( _.mapOwnKeys( window.wTests ).length > 0 )
+    {
+      self.loggerToServer.permanentStyle = null;
+      self.loggerToServer.inputFrom( _.Tester.logger, { combining : 'rewrite' } );
+      return _.Tester.testAll();
+    }
   })
   .doThen( function ()
   {
