@@ -15,12 +15,12 @@ if( typeof module !== 'undefined' )
   require( './Tools.ss' );
   require( 'wremoterequire' );
 
-  require( './aprovider/Abstract.s' );
-  require( './aprovider/AdvancedMixin.s' );
-  require( './aprovider/Chrome.ss' );
-  require( './aprovider/Firefox.ss' );
-  require( './aprovider/Electron.ss' );
-  require( './aprovider/Node.ss' );
+  require( './fprovider/Abstract.s' );
+  require( './fprovider/AdvancedMixin.s' );
+  require( './fprovider/Chrome.ss' );
+  require( './fprovider/Firefox.ss' );
+  require( './fprovider/Electron.ss' );
+  require( './fprovider/Node.ss' );
 
 }
 
