@@ -177,8 +177,7 @@ function _serverLaunch( )
   var self = this;
   var pathNativize = _.fileProvider.pathNativize;
   var con = new wConsequence();
-  var rootDir = _.pathResolve( __dirname, '../../..' );
-  rootDir = ( rootDir );
+  var rootDir = _.pathResolve( __dirname, '../../../..' );
   self.filePath = pathNativize( self.filePath );
   var script = _.fileProvider.fileRead( self.filePath );
   var express = require( 'express' );
