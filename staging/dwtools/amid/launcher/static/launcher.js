@@ -92,7 +92,12 @@ function run ()
   .doThen( () => self.loggerToServer.connect() )
   .doThen( () =>
   {
-    RemoteRequire.require( self.script.filePath );
+    var files = self.script.files;
+    for( var i = 0; i < files.length; i++ )
+    {
+      RemoteRequire.require( files[ i ] );
+    }
+
     if( _.mapOwnKeys( window.wTests ).length > 0 )
     {
       self.loggerToServer.permanentStyle = null;

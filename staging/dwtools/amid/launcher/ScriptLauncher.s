@@ -126,7 +126,7 @@ function launch()
   {
     self.launchDone
     .seal( self )
-    .ifNoErrorThen( self._scriptPrepare )
+    // .ifNoErrorThen( self._scriptPrepare )
     .ifNoErrorThen( function ()
     {
       return _.portGet( self.serverPort )
@@ -179,7 +179,7 @@ function _serverLaunch( )
   var con = new wConsequence();
   var rootDir = _.pathResolve( __dirname, '../../../..' );
   self.filePath = pathNativize( self.filePath );
-  var script = _.fileProvider.fileRead( self.filePath );
+  // var script = _.fileProvider.fileRead( self.filePath );
   var express = require( 'express' );
   var app = express();
   self.server = require( 'http' ).createServer( app );
@@ -196,8 +196,8 @@ function _serverLaunch( )
   var statics = pathNativize( _.pathJoin( rootDir, 'staging/dwtools/amid/launcher/static' ) );
   var modules = pathNativize( _.pathJoin( rootDir, 'node_modules' ) );
 
-  app.use( '/modules', express.static( modules ));
-  app.use('/static', express.static( statics ));
+  app.use( '/modules', express.static( modules ) );
+  app.use( '/static', express.static( statics ) );
 
   app.get( '/', function ( req, res )
   {
@@ -206,8 +206,30 @@ function _serverLaunch( )
 
   app.get( '/script', function ( req, res )
   {
-    var scriptPath = _.pathDot( _.pathRelative( self.remoteRequireServer.rootDir, self.filePath ) );
-    res.send( JSON.stringify( { filePath : scriptPath } ) );
+    var stat = _.fileProvider.fileStat( self.filePath );
+    var files;
+
+    if( stat.isDirectory() )
+    {
+      if( self.includingTests  )
+      {
+        files = _.fileProvider.filesFind
+        ({
+          filePath : self.filePath,
+          relative : self.remoteRequireServer.rootDir,
+          outputFormat : 'relative',
+          ends : [ '.test.s','.test.js' ],
+          recursive : 1,
+          maskAll : _.pathRegexpMakeSafe(),
+        });
+      }
+    }
+    else
+    {
+      files = [ _.pathDot( _.pathRelative( self.remoteRequireServer.rootDir, self.filePath ) ) ];
+    }
+
+    res.send( JSON.stringify( { files : files } ) );
   });
 
   app.get( '/options', function ( req, res )
@@ -296,6 +318,7 @@ function _scriptPrepare()
 
 function _browserLaunch()
 {
+  debugger
   var self = this;
   var providerOptions =
   {
@@ -420,7 +443,8 @@ var Composes =
   verbosity : 1,
   handlingFeedback : 1,
   terminatingAfter : null,
-  usingOsxOpen : 0
+  usingOsxOpen : 0,
+  includingTests: 1
 }
 
 var Aggregates =
