@@ -82,7 +82,8 @@ function argsApply()
     filePath : args.filePath,
     platform : args.platform,
     terminatingAfter : args.terminatingAfter,
-    usingOsxOpen : args.usingOsxOpen
+    usingOsxOpen : args.usingOsxOpen,
+    debug : args.debug
   });
 
   if( self.terminatingAfter === null )
@@ -238,7 +239,8 @@ function _serverLaunch( )
     res.send
     ({
       terminatingAfter : self.terminatingAfter,
-      platform : self.platform
+      platform : self.platform,
+      debug : self.debug
     });
   });
 
@@ -323,7 +325,8 @@ function _browserLaunch()
     url : `http://localhost:${self.serverPort}`,
     headless : self.headless,
     verbosity : self.verbosity,
-    usingOsxOpen : self.usingOsxOpen
+    usingOsxOpen : self.usingOsxOpen,
+    debug : self.debug
   }
 
   var provider = platformsMap[ self.platform ];
@@ -442,7 +445,8 @@ var Composes =
   handlingFeedback : 1,
   terminatingAfter : null,
   usingOsxOpen : 0,
-  includingTests: 1
+  includingTests: 1,
+  debug : 0
 }
 
 var Aggregates =
