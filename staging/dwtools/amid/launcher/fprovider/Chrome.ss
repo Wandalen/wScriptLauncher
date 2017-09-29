@@ -66,7 +66,6 @@ function runAct()
     if( process.platform != 'win32' )
     self._flags.push( '--disable-gl-drawing-for-tests' );
 
-    console.log( self )
     if( !self.headless && self.debug )
     {
       self._flags.push( '--debug-brk', '--auto-open-devtools-for-tabs' );
