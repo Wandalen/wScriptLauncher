@@ -138,6 +138,7 @@ var Composes =
   osxOpenOptions : null,
   usingOsxOpen : 0,
   allowPlistEdit : 1,
+  debug : 0
 }
 
 var Aggregates =

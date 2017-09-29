@@ -39,7 +39,7 @@ function init( o )
 function runAct()
 {
   var self = this;
-  var debuggingPort = 9222;
+  var debuggingPort = 9223;
 
   function _runAct()
   {
@@ -65,6 +65,11 @@ function runAct()
 
     if( process.platform != 'win32' )
     self._flags.push( '--disable-gl-drawing-for-tests' );
+
+    if( !self.headless && self.debug )
+    {
+      self._flags.push( '--debug-brk', '--auto-open-devtools-for-tabs' );
+    }
 
     if( self.headless )
     {

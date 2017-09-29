@@ -82,7 +82,8 @@ function argsApply()
     filePath : args.filePath,
     platform : args.platform,
     terminatingAfter : args.terminatingAfter,
-    usingOsxOpen : args.usingOsxOpen
+    usingOsxOpen : args.usingOsxOpen,
+    debug : args.debug
   });
 
   if( self.terminatingAfter === null )
@@ -126,7 +127,7 @@ function launch()
   {
     self.launchDone
     .seal( self )
-    // .ifNoErrorThen( self._scriptPrepare )
+    .ifNoErrorThen( self._scriptPrepare )
     .ifNoErrorThen( function ()
     {
       return _.portGet( self.serverPort )
@@ -178,7 +179,7 @@ function _serverLaunch( )
   var pathNativize = _.fileProvider.pathNativize;
   var con = new wConsequence();
   var rootDir = _.pathResolve( __dirname, '../../../..' );
-  self.filePath = pathNativize( self.filePath );
+
   // var script = _.fileProvider.fileRead( self.filePath );
   var express = require( 'express' );
   var app = express();
@@ -207,6 +208,7 @@ function _serverLaunch( )
   app.get( '/script', function ( req, res )
   {
     var stat = _.fileProvider.fileStat( self.filePath );
+
     var files;
 
     if( stat.isDirectory() )
@@ -237,7 +239,8 @@ function _serverLaunch( )
     res.send
     ({
       terminatingAfter : self.terminatingAfter,
-      platform : self.platform
+      platform : self.platform,
+      debug : self.debug
     });
   });
 
@@ -299,16 +302,13 @@ function _scriptPrepare()
   }
   else
   {
-    try
-    {
-      var code = _.fileProvider.fileRead( self.filePath );
-      self._script = _.routineMake({ code : code, prependingReturn : 0 });
-      con.give();
-    }
-    catch ( err )
-    {
-      con.error( err );
-    }
+    self.filePath = _.fileProvider.pathNativize( _.pathResolve( _.pathCurrent(), self.filePath ) );
+    console.log( self.filePath )
+    var stat = _.fileProvider.fileStat( self.filePath );
+    if( stat )
+    con.give();
+    else
+    con.error( _.err( self.filePath, ' not exist.' ) );
   }
 
   return con;
@@ -325,7 +325,8 @@ function _browserLaunch()
     url : `http://localhost:${self.serverPort}`,
     headless : self.headless,
     verbosity : self.verbosity,
-    usingOsxOpen : self.usingOsxOpen
+    usingOsxOpen : self.usingOsxOpen,
+    debug : self.debug
   }
 
   var provider = platformsMap[ self.platform ];
@@ -444,7 +445,8 @@ var Composes =
   handlingFeedback : 1,
   terminatingAfter : null,
   usingOsxOpen : 0,
-  includingTests: 1
+  includingTests: 1,
+  debug : 0
 }
 
 var Aggregates =
