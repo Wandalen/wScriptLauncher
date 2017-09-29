@@ -42,13 +42,12 @@ function request( url, onResponse )
   xmlHttp.send( null );
 }
 
+//
 
-function _prepare()
+function _getScript()
 {
   var self = this;
   var con = new wConsequence();
-
-  self.parsedUrl = _.urlParse( window.location.href );
 
   var requestUrl = _.urlJoin( self.parsedUrl.origin, 'script' )
   request( requestUrl, function ( data )
@@ -62,29 +61,12 @@ function _prepare()
        self.options = JSON.parse( data );
        con.give();
      })
-  })
+  });
 
   con.doThen( () =>
   {
-    if( self.options.platform !== 'firefox' )
-    _global_.onbeforeunload = function terminate()
-    {
-      var terminateUrl = _.urlJoin( self.parsedUrl.origin, 'terminate' );
-      request( terminateUrl );
-    }
-
     if( self.options.debug )
     return _.timeOut( 2000 );
-  })
-
-  con.doThen( () =>
-  {
-    _.io = io;
-
-    self.loggerToServer = new wLoggerToServer({ url : window.location.href });
-    self.loggerToServer.permanentStyle = { bg : 'yellow', fg : 'black' };
-    self.loggerToServer.inputFrom( console );
-    return self.loggerToServer.connect();
   })
 
   return con;
@@ -92,30 +74,29 @@ function _prepare()
 
 //
 
-function run ()
+function _beforeRun( require )
 {
   var self = this;
 
-  return new wConsequence().give()
-  .doThen( () => self._prepare() )
-  .doThen( () => self.runAct() )
-  .doThen( ( err ) =>
+  _.include = () => {}
+
+  require( 'wColor' )
+  require( 'wLogger' )
+  require( 'wTesting' )
+  require( 'socket.io-client/dist/socket.io.js' )
+  require( 'wloggertoserver' );
+
+  if( self.options.platform !== 'firefox' )
+  _global_.onbeforeunload = function terminate()
   {
-    if( err )
-    _.errLog( err );
+    var terminateUrl = _.urlJoin( self.parsedUrl.origin, 'terminate' );
+    request( terminateUrl );
+  }
 
-    if( self.options.terminatingAfter )
-    return self.terminate();
-  });
-}
+  _.io = io;
 
-//
-
-function runAct()
-{
-  var self = this;
-
-  var scriptLauncher = new wConsequence().give();
+  self.loggerToServer = new wLoggerToServer({ url : window.location.href });
+  self.loggerToServer.permanentStyle = { bg : 'yellow', fg : 'black' };
 
   if( _.Tester )
   {
@@ -131,27 +112,60 @@ function runAct()
       };
       self.loggerToServer.permanentStyle = null;
 
-      var testLauncher = test.call( _.Tester, suiteName );
+      self.testLauncher = test.call( _.Tester, suiteName );
 
-      testLauncher.tap( () =>
+      self.testLauncher.tap( () =>
       {
+
         self.loggerToServer.permanentStyle = loggerPermanentStyle;
         self.loggerToServer.inputFrom( console );
+        self.scriptLauncher.give();
       });
 
-      scriptLauncher.andThen( testLauncher );
-
-      return testLauncher;
+      return self.testLauncher;
     }
   }
+
+  self.loggerToServer.inputFrom( console );
+  return self.loggerToServer.connect();
+}
+
+//
+
+function run ()
+{
+  var self = this;
+
+  self.parsedUrl = _.urlParse( window.location.href );
+
+  return new wConsequence().give()
+  .doThen( () => self._getScript() )
+  .doThen( () => self.runScript() )
+  .doThen( ( err ) =>
+  {
+    if( err )
+    _.errLog( err );
+
+    if( self.options.terminatingAfter )
+    return self.terminate();
+  });
+}
+
+//
+
+function runScript()
+{
+  var self = this;
+
+  self.scriptLauncher = new wConsequence().give();
 
   var files = self.script.files;
   for( var i = 0; i < files.length; i++ )
   {
-    scriptLauncher.ifNoErrorThen( () => RemoteRequire.require( files[ i ] ) );
+    self.scriptLauncher.got( () => RemoteRequire.require( files[ i ] ) );
   }
 
-  return scriptLauncher;
+  return self.scriptLauncher;
 }
 
 //
@@ -180,14 +194,17 @@ var Restricts =
   parsedUrl : null,
   loggerToServer : null,
   options : null,
+  scriptLauncher : null,
+  testLauncher : null
 }
 
 var Statics =
 {
   run : run,
-  runAct : runAct,
+  runScript : runScript,
   terminate : terminate,
-  _prepare : _prepare
+  _getScript : _getScript,
+  _beforeRun : _beforeRun
 }
 
 // --
