@@ -83,7 +83,6 @@ function _beforeRun( require )
   require( 'wColor' )
   require( 'wLogger' )
   require( 'wTesting' )
-  require( 'socket.io-client/dist/socket.io.js' )
   require( 'wloggertoserver' );
 
   if( self.options.platform !== 'firefox' )
