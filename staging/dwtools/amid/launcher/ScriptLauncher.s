@@ -186,6 +186,9 @@ function _serverLaunch( )
   self.server = require( 'http' ).createServer( app );
   self.server.io = require( 'socket.io' )( self.server );
 
+  var statics = pathNativize( _.pathJoin( rootDir, 'staging/dwtools/amid/launcher/static' ) );
+  var modules = pathNativize( _.pathJoin( rootDir, 'node_modules' ) );
+
   self.remoteRequireServer = _.RemoteRequireServer
   ({
     app : app,
@@ -194,9 +197,6 @@ function _serverLaunch( )
   });
   self.remoteRequireServer.start();
 
-  var statics = pathNativize( _.pathJoin( rootDir, 'staging/dwtools/amid/launcher/static' ) );
-  var modules = pathNativize( _.pathJoin( rootDir, 'node_modules' ) );
-
   app.use( '/modules', express.static( modules ) );
   app.use( '/static', express.static( statics ) );
 
@@ -204,6 +204,13 @@ function _serverLaunch( )
   {
     res.sendFile( pathNativize( _.pathJoin( statics, 'index.html' ) ) );
   });
+
+  // app.get( '/include', function ( req, res )
+  // {
+  //   var includePath = './include.js';
+
+  //   res.send( JSON.stringify( { include : includePath } ) );
+  // });
 
   app.get( '/script', function ( req, res )
   {
