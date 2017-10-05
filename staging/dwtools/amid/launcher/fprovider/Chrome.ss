@@ -47,7 +47,7 @@ function runAct()
     var profilePath = _.pathResolve( __dirname, '../../../../tmp.tmp/chrome' );
     profilePath = _.fileProvider.pathNativize( profilePath );
     //!!! add automatic chrome path finding
-    var pathFinder = require( 'lighthouse/chrome-launcher/chrome-finder' );
+    var pathFinder = require( 'chrome-launcher/chrome-finder' );
     var chromePaths = pathFinder[ process.platform ]();
     self._appPath = chromePaths[ 0 ];
     // self._appPath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
