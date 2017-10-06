@@ -74,15 +74,15 @@ function _getScript()
 
 //
 
-function _beforeRun( require )
+function _beforeRun()
 {
   var self = this;
 
-  _.include = () => {}
+  var require = _.routineJoin( { endPoint : 'local' },  RemoteRequire.require )
 
-  require( 'wColor' )
-  require( 'wLogger' )
-  require( 'wTesting' )
+  require( 'wColor' );
+  require( 'wLogger' );
+  require( 'wTesting' );
   require( 'wloggertoserver' );
 
   if( self.options.platform !== 'firefox' )
@@ -164,7 +164,7 @@ function runScript()
     self.scriptLauncher.got( () => RemoteRequire.require( files[ i ] ) );
   }
 
-  return self.scriptLauncher;
+  return self.scriptLauncher.eitherThenSplit( _.timeOut( 2000 ) );
 }
 
 //
@@ -238,6 +238,7 @@ _.classMake
 
 _global_[ Self.nameShort ] = Self;
 _global_[ 'RemoteRequire' ] = RemoteRequire;
+_global_[ '_remoteRequire' ].resolve = RemoteRequire.resolve;
 _global_[ Self.nameShort ].run();
 
 })();
