@@ -164,7 +164,7 @@ function runScript()
     self.scriptLauncher.got( () => RemoteRequire.require( files[ i ] ) );
   }
 
-  return self.scriptLauncher.eitherThenSplit( _.timeOut( 2000 ) );
+  return self.scriptLauncher;
 }
 
 //
