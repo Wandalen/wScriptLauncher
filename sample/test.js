@@ -21,7 +21,9 @@
     var expected = [ 1,0,0,1 ];
     test.identical( got,expected );
 
+    return _.timeOut( 6000 )
   }
+  simplest.timeOut = 8000;
 
   //
 

@@ -5,6 +5,7 @@
 var _ = wTools;
 var Parent = null;
 var RemoteRequire = new wRemoteRequireClient();
+
 var Self = function Launcher( o )
 {
   if( !( this instanceof Self ) )
@@ -44,7 +45,7 @@ function request( url, onResponse )
 
 //
 
-function _getScript()
+function _scriptGet()
 {
   var self = this;
   var con = new wConsequence();
@@ -65,6 +66,8 @@ function _getScript()
 
   con.doThen( () =>
   {
+    console.log( self.script );
+
     if( self.options.debug )
     return _.timeOut( 2000 );
   })
@@ -77,13 +80,6 @@ function _getScript()
 function _beforeRun()
 {
   var self = this;
-
-  var require = _.routineJoin( { endPoint : 'local' },  RemoteRequire.require )
-
-  require( 'wColor' );
-  require( 'wLogger' );
-  require( 'wTesting' );
-  require( 'wloggertoserver' );
 
   if( self.options.platform !== 'firefox' )
   _global_.onbeforeunload = function terminate()
@@ -115,7 +111,6 @@ function _beforeRun()
 
       self.testLauncher.tap( () =>
       {
-
         self.loggerToServer.permanentStyle = loggerPermanentStyle;
         self.loggerToServer.inputFrom( console );
         self.scriptLauncher.give();
@@ -138,8 +133,10 @@ function run ()
   self.parsedUrl = _.urlParse( window.location.href );
 
   return new wConsequence().give()
-  .doThen( () => self._getScript() )
-  .doThen( () => self.runScript() )
+  .doThen( () => self._scriptGet() )
+  .doThen( () => self._packagesPrepare() )
+  .doThen( () => self._beforeRun() )
+  .doThen( () => self._scriptRun() )
   .doThen( ( err ) =>
   {
     if( err )
@@ -152,7 +149,7 @@ function run ()
 
 //
 
-function runScript()
+function _scriptRun()
 {
   var self = this;
 
@@ -164,7 +161,25 @@ function runScript()
     self.scriptLauncher.got( () => RemoteRequire.require( files[ i ] ) );
   }
 
-  return self.scriptLauncher.eitherThenSplit( _.timeOut( 2000 ) );
+  return self.scriptLauncher;
+}
+
+function _packagesPrepare()
+{
+  var self = this;
+  var packages  =
+  [
+    'wColor',
+    'wLogger',
+    'wTesting',
+    'wloggertoserver',
+    'wRegexpObject'
+  ];
+
+  for( var i = 0; i < packages.length; i++ )
+  {
+    RemoteRequire.requireLocal( packages[ i ] )
+  }
 }
 
 //
@@ -200,9 +215,11 @@ var Restricts =
 var Statics =
 {
   run : run,
-  runScript : runScript,
+  _scriptRun : _scriptRun,
   terminate : terminate,
-  _getScript : _getScript,
+  _scriptGet : _scriptGet,
+  _scriptRun : _scriptRun,
+  _packagesPrepare : _packagesPrepare,
   _beforeRun : _beforeRun
 }
 

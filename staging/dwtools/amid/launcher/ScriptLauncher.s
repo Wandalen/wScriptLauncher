@@ -192,6 +192,7 @@ function _serverLaunch( )
   self.remoteRequireServer = _.RemoteRequireServer
   ({
     app : app,
+    serverPort : self.serverPort,
     verbosity : self.verbosity,
     rootDir : _.pathDir( self.filePath )
   });
