@@ -177,7 +177,7 @@ function _packagesPrepare()
 
   for( var i = 0; i < packages.length; i++ )
   {
-    RemoteRequire.requireLocal( packages[ i ] )
+    _.include( packages[ i ] );
   }
 }
 
