@@ -82,7 +82,7 @@ function _xvfbDisplaySet( display )
     return _.shell
     ({
       mode : 'spawn',
-      code : 'pidof Xvfb',
+      path : 'pidof Xvfb',
     })
     .ifNoErrorThen( function( o )
     {

@@ -52,7 +52,7 @@ function runAct()
   {
     mode : 'shell',
     stdio : [ 'inherit', 'inherit', 'inherit', 'ipc' ],
-    code : self._appPath + ' ' + self._flags,
+    path : self._appPath + ' ' + self._flags,
     outputPiping : 1,
     verbosity : self.verbosity,
   }
@@ -66,7 +66,7 @@ function runAct()
     // if( self._plistChanged )
     // self._plistRestore();
 
-    self._shellOptions.child.on( 'message', function( msg )
+    self._shellOptions.process.on( 'message', function( msg )
     {
       if( msg === 'ready' )
       con.give();

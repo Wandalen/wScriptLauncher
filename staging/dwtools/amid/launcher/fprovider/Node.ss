@@ -56,7 +56,7 @@ function runAct()
     self._shellOptions =
     {
       mode : 'spawn',
-      code : self._appPath,
+      path : self._appPath,
       args : self._flags,
       stdio : 'pipe',
       outputPiping : 1,

@@ -71,7 +71,7 @@ function terminateAct()
 
   var con = new wConsequence().give();
 
-  con.doThen( () => self._shellOptions.child.kill( 'SIGINT' ) );
+  con.doThen( () => self._shellOptions.process.kill( 'SIGINT' ) );
 
   if( self._headlessNoFocus )
   con.doThen( () => self._plistRestore() );
@@ -108,7 +108,7 @@ function _shell()
     self._shellOptions =
     {
       mode : 'spawn',
-      code : self._appPath,
+      path : self._appPath,
       args : self._flags,
       stdio : 'ignore',
       outputPiping : 0,
@@ -119,7 +119,7 @@ function _shell()
   return _.shell( self._shellOptions )
   .doThen( function ()
   {
-    self._shellOptions.child.on( 'close', function ()
+    self._shellOptions.process.on( 'close', function ()
     {
       self._plistRestore();
     })

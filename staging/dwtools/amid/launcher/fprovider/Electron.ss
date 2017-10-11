@@ -59,7 +59,7 @@ function runAct()
   //   verbosity : self.verbosity,
   // }
 
-  //!!! _.shell: Consequence gives message on o.child close event?
+  //!!! _.shell: Consequence gives message on o.process close event?
 
 
   if( self._headlessNoFocus )
