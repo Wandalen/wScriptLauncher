@@ -173,12 +173,11 @@ function _packagesPrepare()
     'wLogger',
     'wTesting',
     'wloggertoserver',
-    'wRegexpObject'
   ];
 
   for( var i = 0; i < packages.length; i++ )
   {
-    RemoteRequire.requireLocal( packages[ i ] )
+    _.include( packages[ i ] );
   }
 }
 
