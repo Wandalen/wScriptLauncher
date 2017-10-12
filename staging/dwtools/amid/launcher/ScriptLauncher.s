@@ -83,7 +83,8 @@ function argsApply()
     platform : args.platform,
     terminatingAfter : args.terminatingAfter,
     usingOsxOpen : args.usingOsxOpen,
-    debug : args.debug
+    debug : args.debug,
+    allowPlistEdit : args.allowPlistEdit
   });
 
   if( self.terminatingAfter === null )

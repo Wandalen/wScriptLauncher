@@ -137,6 +137,9 @@ function _plistEdit()
 {
   var self = this;
 
+  if( !self.allowPlistEdit )
+  return;
+
   self._plistPathGet();
 
   var tmpPath = _.pathResolve( __dirname, '../../../../tmp.tmp' );
@@ -162,6 +165,9 @@ function _plistEdit()
 function _plistRestore()
 {
   var self = this;
+
+  if( !self.allowPlistEdit )
+  return;
 
   if( _.fileProvider.fileStat( self._plistPath ) )
   {
