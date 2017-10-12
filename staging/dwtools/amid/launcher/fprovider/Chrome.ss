@@ -158,10 +158,10 @@ function runAct()
 //
 //   var con = new wConsequence().give();
 //
-//   if( !self._shellOptions.child )
+//   if( !self._shellOptions.process )
 //   con.doThen( () => _.err( 'Process is not running' ) );
 //   else
-//   con.doThen( () => self._shellOptions.child.kill() );
+//   con.doThen( () => self._shellOptions.process.kill() );
 //
 //   return con;
 // }

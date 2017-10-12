@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "test": "wtest staging",
-    "test2": "node staging/dwtools/amid/launcher/Launcher.ss sample/test.js",
+    "test2": "node staging/dwtools/amid/launcher/Launcher.ss sample/test.js allowPlistEdit : 0",
     "make_doc": "./doc.sh"
   },
   "repository": {
