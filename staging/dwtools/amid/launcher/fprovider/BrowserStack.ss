@@ -35,8 +35,8 @@ function init( o )
   var self = this;
   Parent.prototype.init.call( self,o );
 
-  if( !self.configPath )
-  self.configPath = _.pathResolve( __dirname, _.strDup( '../', 5 ), 'browserstack.json' );
+  // if( !self.configPath )
+  // self.configPath = _.pathResolve( __dirname, _.strDup( '../', 5 ), 'browserstack.json' );
 }
 
 //
@@ -94,11 +94,19 @@ function terminateAct()
 {
   var self = this;
 
-  var quit = self.driver.quit();
-  self.con
-  .give()
-  .doThen( wConsequence.from( quit ) )
-  .doThen( () => self.stopBrowserstackLocal() );
+  if( self.driver )
+  {
+    var quit = self.driver.quit();
+    self.con
+    .give()
+    .doThen( wConsequence.from( quit ) )
+    .doThen( () => self.stopBrowserstackLocal() );
+  }
+  else
+  {
+    return new wConsequence().give();
+  }
+
 
   return self.con;
 }
@@ -116,6 +124,11 @@ function _prepareCapabilities()
 
   if( self.configPath )
   {
+    self.configPath = _.pathResolve( _.pathCurrent(), self.configPath );
+
+    if( !_.fileProvider.fileStat( self.configPath ) )
+    throw _.err( 'Provided config path not exist:', self.configPath );
+
     var capabilitiesFromFile = _.fileProvider.fileReadJson( self.configPath );
     _.mapSupplementNulls( self.capabilities, capabilitiesFromFile );
   }
@@ -125,7 +138,14 @@ function _prepareCapabilities()
   Object.setPrototypeOf( self.capabilities, Object.prototype );
 
   if( !self.mapHasAllNotNull( self.capabilities, requiredCapabilities ) )
-  throw _.err( 'Some of required capabilities are not provided!', _.mapOwnKeys( requiredCapabilities ) );
+  {
+    var msg =
+    'Some of required capabilities are not provided: \n'
+    + _.mapOwnKeys( requiredCapabilities ).toString()
+    + '\nPlease provide them through config file or options.'
+
+    throw _.err( msg );
+  }
 }
 
 //
