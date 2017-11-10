@@ -195,6 +195,23 @@ function _plistRestore()
   }
 }
 
+//
+
+function mapHasAllNotNull( src,screen )
+{
+  _.assert( arguments.length === 2 );
+  _.assert( _.objectLike( src ) );
+  _.assert( _.objectLike( screen ) );
+
+  for( var k in screen )
+  {
+    if( !( k in src ) || src[ k ] === null )
+    return false;
+  }
+
+  return true;
+}
+
 // --
 // relationship
 // --
@@ -230,6 +247,8 @@ var Supplement =
   _plistPathGet : _plistPathGet,
   _plistEdit : _plistEdit,
   _plistRestore : _plistRestore,
+
+  mapHasAllNotNull : mapHasAllNotNull,
 
   //
 

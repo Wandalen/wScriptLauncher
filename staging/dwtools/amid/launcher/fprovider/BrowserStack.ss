@@ -6,6 +6,9 @@ if( typeof module !== 'undefined' )
 {
   if( !wTools.PlatformProvider.Abstract )
   require( './PlatformProviderAbstract.s' );
+
+  var webdriver = require( 'selenium-webdriver' );
+  var browserstack = require( 'browserstack-local' );
 }
 
 var _ = wTools;
@@ -23,18 +26,170 @@ var Self = function wPlatformProviderBrowserStack( o )
   return Self.prototype.init.apply( this,arguments );
 }
 
+Self.nameShort = 'BrowserStack';
+
 //
 
 function init( o )
 {
   var self = this;
   Parent.prototype.init.call( self,o );
+
+  if( !self.configPath )
+  self.configPath = _.pathResolve( __dirname, _.strDup( '../', 5 ), 'browserstack.json' );
 }
 
 //
 
 function runAct()
 {
+  var self = this;
+
+  // console.log( 'url:', self.url );
+
+  self._prepareCapabilities();
+
+  var bsKey = self.capabilities[ 'browserstack.key' ];
+
+  self.con = self.runBrowserstackLocal( bsKey )
+  .got( ( err, got ) =>
+  {
+    if( err )
+    return self.con.error( err );
+
+    webdriver.promise.controlFlow().on( 'uncaughtException', function( err )
+    {
+      self.con.error( err );
+    });
+
+    self.driver = new webdriver.Builder()
+    .usingServer('http://hub-cloud.browserstack.com/wd/hub')
+    .withCapabilities( self.capabilities )
+    .build();
+
+    self.driver.get( self.url );
+
+    // var untilOpened = new webdriver.Condition( 'browser is closed', ( d ) =>
+    // {
+    //   return d.getTitle().then( () => false, () => true );
+    // })
+
+    // var closed = self.driver.wait( untilOpened );
+    // var con = wConsequence.from( closed );
+
+    // con.doThen( () =>
+    // {
+    //   return wConsequence.from( self.driver.quit() )
+    // })
+
+
+  })
+
+  return self.con;
+}
+
+//
+
+function terminateAct()
+{
+  var self = this;
+
+  var quit = self.driver.quit();
+  self.con
+  .give()
+  .doThen( wConsequence.from( quit ) )
+  .doThen( () => self.stopBrowserstackLocal() );
+
+  return self.con;
+}
+
+//
+
+function _prepareCapabilities()
+{
+  var self = this;
+
+  if( self.capabilities === null )
+  self.capabilities = {};
+
+  _.assert( _.objectIs( self.capabilities ) );
+
+  if( self.configPath )
+  {
+    var capabilitiesFromFile = _.fileProvider.fileReadJson( self.configPath );
+    _.mapSupplementNulls( self.capabilities, capabilitiesFromFile );
+  }
+
+  _.mapSupplementNulls( self.capabilities, defaultCapabilities );
+
+  Object.setPrototypeOf( self.capabilities, Object.prototype );
+
+  if( !self.mapHasAllNotNull( self.capabilities, requiredCapabilities ) )
+  throw _.err( 'Some of required capabilities are not provided!', _.mapOwnKeys( requiredCapabilities ) );
+}
+
+//
+
+function runBrowserstackLocal( accessKey )
+{
+  var self = this;
+
+  _.assert( arguments.length === 1 );
+
+  self.browserstackLocal = new browserstack.Local();
+
+  var con = new wConsequence();
+
+  var args =
+  {
+    'key' : accessKey,
+    'verbose' : true,
+    'forceLocal' : true
+  }
+
+  self.browserstackLocal.start( args, () => con.give() );
+
+  return con;
+}
+
+//
+
+function stopBrowserstackLocal()
+{
+  var self = this;
+  var con = new wConsequence();
+
+  if( self.browserstackLocal.isRunning() )
+  self.browserstackLocal.stop( () =>
+  {
+    _.assert( !self.browserstackLocal.isRunning() );
+    con.give();
+  })
+  else
+  con.give();
+
+  return con;
+}
+
+//
+
+var requiredCapabilities =
+{
+  'browserstack.user' : '',
+  'browserstack.key' : ''
+}
+
+/* https://www.browserstack.com/automate/capabilities */
+
+var defaultCapabilities =
+{
+  'browserName' : 'chrome',
+  'os' : 'OS X',
+  'os_version' : 'El Capitan',
+  'browserstack.local' : true,
+  'browserstack.debug' : false,
+  'browserstack.video' : false,
+  'build' : 'Testing'
 }
 
 // --
@@ -43,6 +198,8 @@ function runAct()
 
 var Composes =
 {
+  configPath : null,
+  capabilities : null
 }
 
 var Aggregates =
@@ -54,6 +211,13 @@ var Associates =
 }
 
 var Restricts =
+{
+  driver : null,
+  con : null,
+  browserstackLocal : null
+}
+
+var Statics =
 {
 }
 
@@ -67,6 +231,14 @@ var Proto =
   init : init,
 
   runAct : runAct,
+  terminateAct : terminateAct,
+
+  //etc
+
+  _prepareCapabilities : _prepareCapabilities,
+
+  runBrowserstackLocal : runBrowserstackLocal,
+  stopBrowserstackLocal : stopBrowserstackLocal,
 
   //
 
@@ -75,6 +247,7 @@ var Proto =
   Aggregates : Aggregates,
   Associates : Associates,
   Restricts : Restricts,
+  Statics : Statics
 
 }
 
