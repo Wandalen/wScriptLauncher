@@ -21,6 +21,7 @@ if( typeof module !== 'undefined' )
   require( './fprovider/Firefox.ss' );
   require( './fprovider/Electron.ss' );
   require( './fprovider/Node.ss' );
+  require( './fprovider/BrowserStack.ss' );
 
 }
 
@@ -74,18 +75,7 @@ function argsApply()
     return self;
   }
 
-  args = args.map;
-
-  self.copy
-  ({
-    headless : args.headless,
-    filePath : args.filePath,
-    platform : args.platform,
-    terminatingAfter : args.terminatingAfter,
-    usingOsxOpen : args.usingOsxOpen,
-    debug : args.debug,
-    allowPlistEdit : args.allowPlistEdit
-  });
+  self.copy( _.mapScreen( Self.prototype.copyableArgs, args.map ) );
 
   if( self.terminatingAfter === null )
   self.terminatingAfter = self.headless;
@@ -120,24 +110,29 @@ function launch()
   if( self.platform === 'node' )
   {
     self.launchDone
-    .seal( self )
-    .ifNoErrorThen( self._browserLaunch )
+    .ifNoErrorThen( () => self._platformLaunch() )
     .ifNoErrorThen( () => feedback.give( self._provider ) );
   }
   else
   {
     self.launchDone
-    .seal( self )
-    .ifNoErrorThen( self._scriptPrepare )
-    .ifNoErrorThen( function ()
+    .ifNoErrorThen( () => self._scriptPrepare() )
+    .ifNoErrorThen( () => self._preparePort() )
+    .ifNoErrorThen( () => self._serverLaunch() )
+
+    if( !self.serverOnly )
     {
-      return _.portGet( self.serverPort )
-      .doThen( ( err, port ) => { self.serverPort = port }  );
-    })
-    .ifNoErrorThen( self._serverLaunch )
-    .ifNoErrorThen( self._browserLaunch )
-    .ifNoErrorThen( () => feedback.give( self._provider ) );
+      self.launchDone
+      .ifNoErrorThen( () => self._platformLaunch() )
+      .ifNoErrorThen( () => feedback.give( self._provider ) );
+    }
   }
+
+  self.launchDone.ifErrorThen( ( err ) =>
+  {
+    self.terminate()
+    .got( () => feedback.error( err ) );
+  });
 
   if( self.handlingFeedback )
   feedback
@@ -145,8 +140,10 @@ function launch()
   {
     if( err )
     throw _.errLog( err );
+
     logger.log( got );
-    self.launchDone.give();
+
+    self.launchDone.give()
   });
 
   return self.launchDone;
@@ -172,6 +169,21 @@ function terminate()
   return con;
 }
 
+//
+
+function _preparePort()
+{
+  var self = this;
+
+  return _.portGet( self.serverPort )
+  .doThen( ( err, port ) =>
+  {
+    if( err )
+    throw _.err( err );
+
+    self.serverPort = port
+  });
+}
 //
 
 function _serverLaunch( )
@@ -290,6 +302,10 @@ function _serverLaunch( )
   {
     if( self.verbosity >= 3 )
     logger.log( 'Server started on port ', self.serverPort );
+
+    if( self.serverOnly )
+    console.log( `http://localhost:${self.serverPort}` );
+
     self.server.isRunning = true;
     con.give();
   });
@@ -325,10 +341,14 @@ function _scriptPrepare()
 
 //
 
-function _browserLaunch()
+function _platformLaunch()
 {
-  debugger
   var self = this;
+
+  var provider = platformsMap[ self.platform ];
+  if( provider === undefined )
+  return self.launchDone.error( 'Requested browser is not supported.' );
+
   var providerOptions =
   {
     url : `http://localhost:${self.serverPort}`,
@@ -339,9 +359,23 @@ function _browserLaunch()
     debug : self.debug
   }
 
-  var provider = platformsMap[ self.platform ];
-  if( provider === undefined )
-  return self.launchDone.error( 'Requested browser is not supported.' );
+  if( self.platform === 'browserstack' )
+  {
+    var o =
+    {
+      configPath : self.bsConfigPath,
+      capabilities :
+      {
+        'browserstack.user' : self.bsUser,
+        'browserstack.key' : self.bsKey,
+        'browserName' : self.bsBrowser,
+        'os' : self.bsOs,
+        'os_version' : self.bsOsVersion,
+      }
+    }
+
+    _.mapExtend( providerOptions, o );
+  }
 
   if( self.platform === 'node' )
   providerOptions.url = self.filePath;
@@ -396,7 +430,8 @@ var platformsMap =
   'firefox' : _.PlatformProvider.Firefox,
   'chrome' : _.PlatformProvider.Chrome,
   'electron' : _.PlatformProvider.Electron,
-  'node' : _.PlatformProvider.Node
+  'node' : _.PlatformProvider.Node,
+  'browserstack' : _.PlatformProvider.BrowserStack
 }
 
 //
@@ -450,14 +485,28 @@ var Composes =
 {
   filePath : null,
   platform : 'chrome',
-  headless : true,
   verbosity : 1,
   handlingFeedback : 1,
+  includingTests: 1,
+  serverOnly : 0,
+
+
+  /* browser */
+
+  headless : true,
   terminatingAfter : null,
   usingOsxOpen : 0,
-  includingTests: 1,
   debug : 0,
-  allowPlistEdit : 1
+  allowPlistEdit : 1,
+
+  /* browserStack */
+
+  bsUser : null,
+  bsKey : null,
+  bsBrowser : null,
+  bsOs : null,
+  bsOsVersion : null,
+  bsConfigPath : null
 }
 
 var Aggregates =
@@ -483,7 +532,8 @@ var Statics  =
 {
   helpGet : helpGet,
   helpOnly : false,
-  providersGet : providersGet
+  providersGet : providersGet,
+  copyableArgs : Object.create( null )
 }
 
 // --
@@ -501,9 +551,10 @@ var Proto =
   launch : launch,
   terminate : terminate,
 
+  _preparePort : _preparePort,
   _serverLaunch : _serverLaunch,
   _scriptPrepare : _scriptPrepare,
-  _browserLaunch : _browserLaunch,
+  _platformLaunch : _platformLaunch,
   _xvfbCheck : _xvfbCheck,
 
 
@@ -517,6 +568,15 @@ var Proto =
   Statics : Statics,
 
 }
+
+//
+
+if( Proto.Composes )
+_.mapExtend( Statics.copyableArgs,Proto.Composes );
+if( Proto.Aggregates )
+_.mapExtend( Statics.copyableArgs,Proto.Aggregates );
+if( Proto.Associates )
+_.mapExtend( Statics.copyableArgs,Proto.Associates );
 
 //
 
