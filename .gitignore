@@ -9,4 +9,5 @@ tmp.tmp
 builder
 proto
 node_modules
+package-lock.json
 html.build.coffee
