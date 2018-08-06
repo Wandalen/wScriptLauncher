@@ -10,7 +10,7 @@ var _ = wTools;
 
 var launcher = wScriptLauncher
 ({
-  filePath : _.pathResolve( __dirname, './scripts/TestSuit.test.s' ), // path to javascript file
+  filePath : _.resolve( __dirname, './scripts/TestSuit.test.s' ), // path to javascript file
   platform : 'chrome', // specifies targer platform, in out case its chrome browser
   headless : true, // runs chrome browser without window
   terminatingAfter : true, // terminates launcher browser after script execution

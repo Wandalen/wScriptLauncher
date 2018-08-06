@@ -1,6 +1,7 @@
 {
   "name": "wscriptlauncher",
   "version": "0.3.14",
+  "enabled": 0,
   "description": "Provides a simple human-machine, machine-machine interfaces to run a script file on a platform of interest and get output to your terminal",
   "author": "Kostiantyn Wandalen <wanalen@willbe.so>",
   "license": "MIT",
@@ -39,7 +40,7 @@
     "wCopyable": "",
     "wFiles": "",
     "wLogger": "",
-    "wPath": "",
+    "wpathfundamentals": "",
     "wProto": "",
     "wTesting": "",
     "wTools": "",

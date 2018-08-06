@@ -36,7 +36,7 @@ function init( o )
   Parent.prototype.init.call( self,o );
 
   // if( !self.configPath )
-  // self.configPath = _.pathResolve( __dirname, _.strDup( '../', 5 ), 'browserstack.json' );
+  // self.configPath = _.resolve( __dirname, _.strDup( '../', 5 ), 'browserstack.json' );
 }
 
 //
@@ -124,7 +124,7 @@ function _prepareCapabilities()
 
   if( self.configPath )
   {
-    self.configPath = _.pathResolve( _.pathCurrent(), self.configPath );
+    self.configPath = _.resolve( _.current(), self.configPath );
 
     if( !_.fileProvider.fileStat( self.configPath ) )
     throw _.err( 'Provided config path not exist:', self.configPath );

@@ -39,7 +39,7 @@ function runAct()
 {
   var self = this;
 
-  var launcherPath  = _.pathResolve( __dirname, '../PhantomJsProcess.ss' );
+  var launcherPath  = _.resolve( __dirname, '../PhantomJsProcess.ss' );
 
   self._flags =
   [

@@ -44,11 +44,11 @@ function runAct()
   function _runAct()
   {
     var con = new wConsequence();
-    var profilePath = _.pathResolve( __dirname, '../../../../tmp.tmp/chrome' );
-    profilePath = _.fileProvider.pathNativize( profilePath );
+    var profilePath = _.resolve( __dirname, '../../../../tmp.tmp/chrome' );
+    profilePath = _.fileProvider.nativize( profilePath );
     //!!! add automatic chrome path finding
-    var pathFinder = require( 'chrome-launcher/chrome-finder' );
-    var chromePaths = pathFinder[ process.platform ]();
+    var finder = require( 'chrome-launcher/chrome-finder' );
+    var chromePaths = finder[ process.platform ]();
     self._appPath = chromePaths[ 0 ];
     // self._appPath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
     self._flags =

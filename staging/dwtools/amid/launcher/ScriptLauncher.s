@@ -189,9 +189,9 @@ function _preparePort()
 function _serverLaunch( )
 {
   var self = this;
-  var pathNativize = _.fileProvider.pathNativize;
+  var nativize = _.fileProvider.nativize;
   var con = new wConsequence();
-  var rootDir = _.pathResolve( __dirname, '../../../..' );
+  var rootDir = _.resolve( __dirname, '../../../..' );
 
   // var script = _.fileProvider.fileRead( self.filePath );
   var express = require( 'express' );
@@ -199,15 +199,15 @@ function _serverLaunch( )
   self.server = require( 'http' ).createServer( app );
   self.server.io = require( 'socket.io' )( self.server );
 
-  var statics = pathNativize( _.pathJoin( rootDir, 'staging/dwtools/amid/launcher/static' ) );
-  var modules = pathNativize( _.pathJoin( rootDir, 'node_modules' ) );
+  var statics = nativize( _.join( rootDir, 'staging/dwtools/amid/launcher/static' ) );
+  var modules = nativize( _.join( rootDir, 'node_modules' ) );
 
   self.remoteRequireServer = _.RemoteRequireServer
   ({
     app : app,
     serverPort : self.serverPort,
     verbosity : self.verbosity,
-    rootDir : _.pathDir( self.filePath )
+    rootDir : _.dir( self.filePath )
   });
   self.remoteRequireServer.start();
 
@@ -216,7 +216,7 @@ function _serverLaunch( )
 
   app.get( '/', function ( req, res )
   {
-    res.sendFile( pathNativize( _.pathJoin( statics, 'index.html' ) ) );
+    res.sendFile( nativize( _.join( statics, 'index.html' ) ) );
   });
 
   // app.get( '/include', function ( req, res )
@@ -243,13 +243,13 @@ function _serverLaunch( )
           outputFormat : 'relative',
           ends : [ '.test.s','.test.js' ],
           recursive : 1,
-          maskAll : _.pathRegexpMakeSafe(),
+          maskAll : _.regexpMakeSafe(),
         });
       }
     }
     else
     {
-      files = [ _.pathDot( _.pathRelative( self.remoteRequireServer.rootDir, self.filePath ) ) ];
+      files = [ _.dot( _.relative( self.remoteRequireServer.rootDir, self.filePath ) ) ];
     }
 
     res.send( JSON.stringify( { files : files } ) );
@@ -327,7 +327,7 @@ function _scriptPrepare()
   }
   else
   {
-    self.filePath = _.fileProvider.pathNativize( _.pathResolve( _.pathCurrent(), self.filePath ) );
+    self.filePath = _.fileProvider.nativize( _.resolve( _.current(), self.filePath ) );
     console.log( self.filePath )
     var stat = _.fileProvider.fileStat( self.filePath );
     if( stat )

@@ -39,10 +39,10 @@ function runAct()
 {
   var self = this;
 
-  var profilePath = _.pathResolve( __dirname, '../../../../tmp.tmp/firefox' );
-  profilePath = _.fileProvider.pathNativize( profilePath );
-  var userJsPath = _.pathJoin( profilePath, 'user.js' );
-  userJsPath = _.fileProvider.pathNativize( userJsPath );
+  var profilePath = _.resolve( __dirname, '../../../../tmp.tmp/firefox' );
+  profilePath = _.fileProvider.nativize( profilePath );
+  var userJsPath = _.join( profilePath, 'user.js' );
+  userJsPath = _.fileProvider.nativize( userJsPath );
 
   self._flags =
   [
@@ -54,7 +54,7 @@ function runAct()
 
   function _createProfile()
   {
-    self._appPath = _.fileProvider.pathNativize( self._appPath );
+    self._appPath = _.fileProvider.nativize( self._appPath );
     var createProfile = self._appPath + ' -CreateProfile ' + ` "launcher ${profilePath}" `;
 
     return _.shell( createProfile )

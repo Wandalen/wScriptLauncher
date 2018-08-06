@@ -127,7 +127,7 @@ function _plistPathGet()
   var index = self._appPath.indexOf( ins );
   if( index !== -1 )
   {
-    self._plistPath = _.pathJoin( self._appPath.slice( 0, index + ins.length ), fileName );
+    self._plistPath = _.join( self._appPath.slice( 0, index + ins.length ), fileName );
   }
 }
 
@@ -142,8 +142,8 @@ function _plistEdit()
 
   self._plistPathGet();
 
-  var tmpPath = _.pathResolve( __dirname, '../../../../tmp.tmp' );
-  self.plistBackupPath = _.pathJoin( tmpPath, 'plistBackup.plist' );
+  var tmpPath = _.resolve( __dirname, '../../../../tmp.tmp' );
+  self.plistBackupPath = _.join( tmpPath, 'plistBackup.plist' );
 
   if( !_.strIs( self._plistPath ) )
   return;

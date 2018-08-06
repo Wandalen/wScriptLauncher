@@ -103,7 +103,7 @@ function _shell()
     //   code = self._appPath + ' ' + self._flags.join( ' ' );
     // }
 
-    self._appPath = _.fileProvider.pathNativize( self._appPath );
+    self._appPath = _.fileProvider.nativize( self._appPath );
 
     self._shellOptions =
     {
