@@ -39,7 +39,7 @@ function runAct()
 
   self._appPath = require( 'electron' );
 
-  var launcherPath  = _.resolve( __dirname, '../ElectronProcess.ss' );
+  var launcherPath  = _.path.resolve( __dirname, '../ElectronProcess.ss' );
   launcherPath  = _.fileProvider.nativize( launcherPath );
 
   var port = _.urlParse( self.url ).port;
@@ -108,7 +108,7 @@ var Proto =
 
   //
 
-  constructor : Self,
+  //constructor : Self,
   Composes : Composes,
   Aggregates : Aggregates,
   Associates : Associates,
@@ -117,14 +117,14 @@ var Proto =
 
 //
 
-_.classMake
+_.classDeclare
 ({
   cls : Self,
   parent : Parent,
   extend : Proto,
 });
 
-_.PlatformProvider.AdvancedMixin.mixin( Self );
+_.PlatformProviderMixin.mixin( Self );
 
 //
 

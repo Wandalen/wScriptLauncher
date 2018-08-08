@@ -44,10 +44,10 @@ function runAct()
   function _runAct()
   {
     var con = new wConsequence();
-    var profilePath = _.resolve( __dirname, '../../../../tmp.tmp/chrome' );
+    var profilePath = _.path.resolve( __dirname, '../../../../tmp.tmp/chrome' );
     profilePath = _.fileProvider.nativize( profilePath );
     //!!! add automatic chrome path finding
-    var finder = require( 'chrome-launcher/chrome-finder' );
+    var finder = require( 'chrome-launcher/dist/chrome-finder' );
     var chromePaths = finder[ process.platform ]();
     self._appPath = chromePaths[ 0 ];
     // self._appPath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
@@ -199,7 +199,7 @@ var Proto =
 
   //
 
-  constructor : Self,
+  //constructor : Self,
   Composes : Composes,
   Aggregates : Aggregates,
   Associates : Associates,
@@ -209,14 +209,14 @@ var Proto =
 
 //
 
-_.classMake
+_.classDeclare
 ({
   cls : Self,
   parent : Parent,
   extend : Proto,
 });
 
-_.PlatformProvider.AdvancedMixin.mixin( Self );
+_.PlatformProviderMixin.mixin( Self );
 
 //
 

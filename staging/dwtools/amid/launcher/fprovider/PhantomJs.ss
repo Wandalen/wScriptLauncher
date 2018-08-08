@@ -39,7 +39,7 @@ function runAct()
 {
   var self = this;
 
-  var launcherPath  = _.resolve( __dirname, '../PhantomJsProcess.ss' );
+  var launcherPath  = _.path.resolve( __dirname, '../PhantomJsProcess.ss' );
 
   self._flags =
   [
@@ -109,7 +109,7 @@ var Proto =
 
   //
 
-  constructor : Self,
+  //constructor : Self,
   Composes : Composes,
   Aggregates : Aggregates,
   Associates : Associates,
@@ -119,14 +119,14 @@ var Proto =
 
 //
 
-_.classMake
+_.classDeclare
 ({
   cls : Self,
   parent : Parent,
   extend : Proto,
 });
 
-_.PlatformProvider.AdvancedMixin.mixin( Self );
+_.PlatformProviderMixin.mixin( Self );
 
 //
 

@@ -39,9 +39,9 @@ function runAct()
 {
   var self = this;
 
-  var profilePath = _.resolve( __dirname, '../../../../tmp.tmp/firefox' );
+  var profilePath = _.path.resolve( __dirname, '../../../../tmp.tmp/firefox' );
   profilePath = _.fileProvider.nativize( profilePath );
-  var userJsPath = _.join( profilePath, 'user.js' );
+  var userJsPath = _.path.join( profilePath, 'user.js' );
   userJsPath = _.fileProvider.nativize( userJsPath );
 
   self._flags =
@@ -130,7 +130,7 @@ var Proto =
 
   //
 
-  constructor : Self,
+  //constructor : Self,
   Composes : Composes,
   Aggregates : Aggregates,
   Associates : Associates,
@@ -140,14 +140,14 @@ var Proto =
 
 //
 
-_.classMake
+_.classDeclare
 ({
   cls : Self,
   parent : Parent,
   extend : Proto,
 });
 
-_.PlatformProvider.AdvancedMixin.mixin( Self );
+_.PlatformProviderMixin.mixin( Self );
 
 //
 
