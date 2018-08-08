@@ -101,9 +101,9 @@ function _beforeRun()
     _.Tester.test = ( suiteName ) =>
     {
       self.loggerToServer.inputUnchain( console );
-      _.Tester.logger.onWrite = ( o ) =>
+      _.Tester.logger.onTransformEnd = ( o ) =>
       {
-        self.loggerToServer.log( o.output[ 0 ] );
+        self.loggerToServer.log( o.outputForPrinter[ 0 ] );
       };
       self.loggerToServer.permanentStyle = null;
 
@@ -171,10 +171,7 @@ function _packagesPrepare()
   var self = this;
   var packages  =
   [
-    /* 'wColor',
-    'wLogger',
     'wTesting',
-    'wloggertoserver', */
   ];
 
   for( var i = 0; i < packages.length; i++ )
