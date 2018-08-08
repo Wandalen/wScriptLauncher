@@ -171,7 +171,7 @@ function _packagesPrepare()
   var self = this;
   var packages  =
   [
-    'wTesting',
+    // 'wTesting',
   ];
 
   for( var i = 0; i < packages.length; i++ )
