@@ -7,30 +7,57 @@
     <script src="static/global.js"></script>
     <script src="modules/wTools/staging/dwtools/abase/layer1/aFundamental.s"></script>
     <script src="modules/wTools/staging/dwtools/abase/layer1/cDiagnostics.s"></script>
-    <script src="modules/wTools/staging/dwtools/abase/layer1/cFieldMapper.s"></script>
-    <script src="modules/wTools/staging/dwtools/abase/layer1/cxArrayDescriptor.s"></script>
-    <script src="modules/wTools/staging/dwtools/abase/layer1/dSetup.s"></script>
-    <script src="modules/wTools/staging/dwtools/abase/layer2/fExecTools.s"></script>
+    <script src="modules/wTools/staging/dwtools/abase/layer1/eFieldMapper.s"></script>
+    <script src="modules/wTools/staging/dwtools/abase/layer1/kArrayDescriptor.s"></script>
+    <script src="modules/wTools/staging/dwtools/abase/layer1/zSetup.s"></script>
+    <script src="modules/wexternalfundamentals/staging/dwtools/abase/layer4/External.s"></script> <!--  fix -->
+    <script src="modules/wTools/staging/dwtools/abase/layer2/bLookTools.s"></script>
     <script src="modules/wTools/staging/dwtools/abase/layer2/fIncludeTools.s"></script>
     <script src="modules/wTools/staging/dwtools/abase/layer2/fNameTools.s"></script>
     <script src="modules/wTools/staging/dwtools/abase/layer2/fStringTools.s"></script>
+    <script src="modules/wTools/staging/dwtools/abase/layer2/fStringTools.s"></script>
     <script src="modules/wProto/staging/dwtools/abase/layer3/Proto.s"></script>
     <script src="modules/winstancing/staging/dwtools/abase/mixin/Instancing.s"></script>
-    <script src="modules/wPath/staging/dwtools/abase/layer3/PathTools.s"></script>
-    <script src="modules/wcloner/staging/dwtools/abase/layer3/Cloner.s"></script>
+    <script src="modules/wpathfundamentals/staging/dwtools/abase/layer3/Path.s"></script>
+    <script src="modules/wurifundamentals/staging/dwtools/abase/layer4/Uri.s"></script>
+    <script src="modules/warraysorted/staging/dwtools/abase/layer4/ArraySorted.s"></script>
+    <script src="modules/wstringer/staging/dwtools/abase/layer4/aStringer.s"></script>
+    <script src="modules/wtraverser/staging/dwtools/abase/layer4/Traverser.s"></script>
+    <script src="modules/wcloner/staging/dwtools/abase/layer5/Cloner.s"></script>
     <script src="modules/wCopyable/staging/dwtools/abase/mixin/Copyable.s"></script>
     <script src="modules/wConsequence/staging/dwtools/abase/oclass/Consequence.s"></script>
+
+    <script src="modules/wColor/staging/dwtools/amid/color/Color.s"></script>
+
+    <script src="modules/wLogger/staging/dwtools/abase/printer/aChainer.s"></script>
+    <script src="modules/wLogger/staging/dwtools/abase/printer/aChainingMixin.s"></script>
+    <script src="modules/wLogger/staging/dwtools/abase/printer/aColoredMixin.s"></script>
+    <script src="modules/wLogger/staging/dwtools/abase/printer/PrinterBase.s"></script>
+    <script src="modules/wLogger/staging/dwtools/abase/printer/PrinterMid.s"></script>
+    <script src="modules/wLogger/staging/dwtools/abase/printer/PrinterTop.s"></script>
+    <script src="modules/wLogger/staging/dwtools/abase/printer/top/Logger.s"></script>
+
+    <script src="modules/wloggertoserver/staging/dwtools/abase/aclass/printer/top/ToServer.s"></script>
+
     <script src="modules/wfieldsstack/staging/dwtools/abase/mixin/FieldsStack.s"></script>
-    <script src="modules/wFiles/staging/dwtools/amid/file/FileBase.s"></script>
-    <script src="modules/wFiles/staging/dwtools/amid/file/base/FileRecordOptions.s"></script>
-    <script src="modules/wFiles/staging/dwtools/amid/file/base/FileRecord.s"></script>
-    <script src="modules/wFiles/staging/dwtools/amid/file/fprovider/aAbstract.s"></script>
-    <script src="modules/wFiles/staging/dwtools/amid/file/fprovider/aPartial.s"></script>
-    <script src="modules/wFiles/staging/dwtools/amid/file/fprovider/mFindMixin.s"></script>
-    <script src="modules/wFiles/staging/dwtools/amid/file/fprovider/mSecondaryMixin.s"></script>
-    <script src="modules/wFiles/staging/dwtools/amid/file/fprovider/pUrl.js"></script>
-    <script src="modules/wFiles/staging/dwtools/amid/file/FileMid.s"></script>
-    <script src="modules/wFiles/staging/dwtools/amid/file/FileTop.s"></script>
+    <script src="modules/wverbal/staging/dwtools/amid/amixin/Verbal.s"></script>
+    <script src="modules/wstringsextra/staging/dwtools/amid/astring/StringsExtra.s"></script>
+    <script src="modules/wFiles/staging/dwtools/amid/files/UseBase.s"></script>
+    <script src="modules/wFiles/staging/dwtools/amid/files/base/FileRecordFilter.s"></script>
+    <script src="modules/wFiles/staging/dwtools/amid/files/base/FileRecordContext.s"></script>
+    <script src="modules/wFiles/staging/dwtools/amid/files/base/FileRecord.s"></script>
+    <script src="modules/wFiles/staging/dwtools/amid/files/base/FileRoutines.s"></script>
+    <script src="modules/wFiles/staging/dwtools/amid/files/base/FileStat.s"></script>
+    <script src="modules/wFiles/staging/dwtools/amid/files/base/Path.s"></script>
+    <script src="modules/wFiles/staging/dwtools/amid/files/fprovider/aAbstract.s"></script>
+    <script src="modules/wFiles/staging/dwtools/amid/files/fprovider/aPartial.s"></script>
+    <script src="modules/wFiles/staging/dwtools/amid/files/fprovider/mFindMixin.s"></script>
+    <script src="modules/wFiles/staging/dwtools/amid/files/fprovider/mSecondaryMixin.s"></script>
+    <script src="modules/wFiles/staging/dwtools/amid/files/fprovider/pUrl.js"></script>
+    <script src="modules/wFiles/staging/dwtools/amid/files/UseMid.s"></script>
+    <script src="modules/wFiles/staging/dwtools/amid/files/UseTop.s"></script>
+
+    <script src="modules/socket.io-client/dist/socket.io.js"></script>
 
     <script src="modules/wremoterequire/staging/dwtools/amid/remoteRequire/Client.s"></script>
     <script src="static/launcher.js"></script>

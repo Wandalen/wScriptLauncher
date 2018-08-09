@@ -2,7 +2,7 @@
 
 'use strict';
 
-var _ = wTools;
+var _ = _global_.wTools;
 
 //
 
@@ -43,7 +43,7 @@ var Self =
 
 //
 
-Self = wTestSuit( Self );
+Self = wTestSuite( Self );
 if( typeof module !== 'undefined' && !module.parent )
 _.Tester.test( Self.name );
 

@@ -36,7 +36,7 @@ function init( o )
   Parent.prototype.init.call( self,o );
 
   // if( !self.configPath )
-  // self.configPath = _.resolve( __dirname, _.strDup( '../', 5 ), 'browserstack.json' );
+  // self.configPath = _.path.resolve( __dirname, _.strDup( '../', 5 ), 'browserstack.json' );
 }
 
 //
@@ -124,7 +124,7 @@ function _prepareCapabilities()
 
   if( self.configPath )
   {
-    self.configPath = _.resolve( _.current(), self.configPath );
+    self.configPath = _.path.resolve( _.path.current(), self.configPath );
 
     if( !_.fileProvider.fileStat( self.configPath ) )
     throw _.err( 'Provided config path not exist:', self.configPath );
@@ -262,7 +262,7 @@ var Proto =
 
   //
 
-  constructor : Self,
+  //constructor : Self,
   Composes : Composes,
   Aggregates : Aggregates,
   Associates : Associates,
@@ -273,14 +273,14 @@ var Proto =
 
 //
 
-_.classMake
+_.classDeclare
 ({
   cls : Self,
   parent : Parent,
   extend : Proto,
 });
 
-_.PlatformProvider.AdvancedMixin.mixin( Self );
+_.PlatformProviderMixin.mixin( Self );
 
 //
 

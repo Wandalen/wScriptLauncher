@@ -17,19 +17,15 @@ var Abstract = _.PlatformProvider.Abstract;
 
 //
 
-function _mixin( cls )
+function onMixin( mixinDescriptor, dstClass )
 {
 
-  var dstProto = cls.prototype;
+  var dstPrototype = dstClass.prototype;
 
-  _.assert( arguments.length === 1 );
-  _.assert( _.routineIs( cls ) );
+  _.assert( arguments.length === 2, 'expects exactly two arguments' );
+  _.assert( _.routineIs( dstClass ) );
 
-  _.mixinApply
-  ({
-    dstProto : dstProto,
-    descriptor : Self,
-  });
+  _.mixinApply( this, dstPrototype );
 
 }
 
@@ -127,7 +123,7 @@ function _plistPathGet()
   var index = self._appPath.indexOf( ins );
   if( index !== -1 )
   {
-    self._plistPath = _.join( self._appPath.slice( 0, index + ins.length ), fileName );
+    self._plistPath = _.path.join( self._appPath.slice( 0, index + ins.length ), fileName );
   }
 }
 
@@ -142,8 +138,8 @@ function _plistEdit()
 
   self._plistPathGet();
 
-  var tmpPath = _.resolve( __dirname, '../../../../tmp.tmp' );
-  self.plistBackupPath = _.join( tmpPath, 'plistBackup.plist' );
+  var tmpPath = _.path.resolve( __dirname, '../../../../tmp.tmp' );
+  self.plistBackupPath = _.path.join( tmpPath, 'plistBackup.plist' );
 
   if( !_.strIs( self._plistPath ) )
   return;
@@ -267,8 +263,8 @@ var Self =
   supplement : Supplement,
 
   name : 'PlatformProviderMixin',
-  _mixin : _mixin,
-
+  shortName  : 'PlatformProviderMixin',
+  onMixin : onMixin,
 }
 
 //
@@ -276,10 +272,10 @@ var Self =
 // Object.setPrototypeOf( Self, Supplement );
 
 _.PlatformProvider = _.PlatformProvider || Object.create( null );
-_.PlatformProvider.AdvancedMixin = Self;
+_.PlatformProviderMixin = Self;
 
 if( typeof module !== 'undefined' )
 module[ 'exports' ] = Self;
-_global_[ Self.name ] = wTools[ Self.nameShort ] = _.mixinMake( Self );
+_global_[ Self.name ] = wTools[ Self.shortName ] = _.mixinDelcare( Self );
 
 })();

@@ -8,7 +8,7 @@ if( typeof module !== 'undefined' )
 
   wTools.include( 'wProto' );
   wTools.include( 'wFiles' );
-  wTools.include( 'wPath' );
+  wTools.include( 'wPathFundamentals' );
   wTools.include( 'wConsequence' );
   wTools.include( 'wCopyable' );
 
@@ -75,7 +75,7 @@ function argsApply()
     return self;
   }
 
-  self.copy( _.mapScreen( Self.prototype.copyableArgs, args.map ) );
+  self.copy( _.mapOnly( args.map, Self.prototype.copyableArgs ) );
 
   if( self.terminatingAfter === null )
   self.terminatingAfter = self.headless;
@@ -191,7 +191,7 @@ function _serverLaunch( )
   var self = this;
   var nativize = _.fileProvider.nativize;
   var con = new wConsequence();
-  var rootDir = _.resolve( __dirname, '../../../..' );
+  var rootDir = _.path.resolve( __dirname, '../../../..' );
 
   // var script = _.fileProvider.fileRead( self.filePath );
   var express = require( 'express' );
@@ -199,15 +199,15 @@ function _serverLaunch( )
   self.server = require( 'http' ).createServer( app );
   self.server.io = require( 'socket.io' )( self.server );
 
-  var statics = nativize( _.join( rootDir, 'staging/dwtools/amid/launcher/static' ) );
-  var modules = nativize( _.join( rootDir, 'node_modules' ) );
+  var statics = nativize( _.path.join( rootDir, 'staging/dwtools/amid/launcher/static' ) );
+  var modules = nativize( _.path.join( rootDir, 'node_modules' ) );
 
   self.remoteRequireServer = _.RemoteRequireServer
   ({
     app : app,
     serverPort : self.serverPort,
     verbosity : self.verbosity,
-    rootDir : _.dir( self.filePath )
+    rootDir : _.path.dir( self.filePath )
   });
   self.remoteRequireServer.start();
 
@@ -216,7 +216,7 @@ function _serverLaunch( )
 
   app.get( '/', function ( req, res )
   {
-    res.sendFile( nativize( _.join( statics, 'index.html' ) ) );
+    res.sendFile( nativize( _.path.join( statics, 'index.html' ) ) );
   });
 
   // app.get( '/include', function ( req, res )
@@ -249,7 +249,7 @@ function _serverLaunch( )
     }
     else
     {
-      files = [ _.dot( _.relative( self.remoteRequireServer.rootDir, self.filePath ) ) ];
+      files = [ _.path.dot( _.path.relative( self.remoteRequireServer.rootDir, self.filePath ) ) ];
     }
 
     res.send( JSON.stringify( { files : files } ) );
@@ -320,6 +320,8 @@ function _scriptPrepare()
   var self = this;
   var con = new wConsequence();
 
+  debugger
+
   if( !self.filePath )
   {
     self._script = function(){ logger.log( wScriptLauncher.helpGet() ) };
@@ -327,7 +329,8 @@ function _scriptPrepare()
   }
   else
   {
-    self.filePath = _.fileProvider.nativize( _.resolve( _.current(), self.filePath ) );
+    debugger
+    self.filePath = _.fileProvider.nativize( _.path.resolve( _.path.current(), self.filePath ) );
     console.log( self.filePath )
     var stat = _.fileProvider.fileStat( self.filePath );
     if( stat )
@@ -560,7 +563,7 @@ var Proto =
 
   //
 
-  constructor : Self,
+  //constructor : Self,
   Composes : Composes,
   Aggregates : Aggregates,
   Associates : Associates,
@@ -580,7 +583,7 @@ _.mapExtend( Statics.copyableArgs,Proto.Associates );
 
 //
 
-_.classMake
+_.classDeclare
 ({
   cls : Self,
   parent : Parent,

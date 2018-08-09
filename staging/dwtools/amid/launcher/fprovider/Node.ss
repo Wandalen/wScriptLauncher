@@ -102,7 +102,7 @@ var Proto =
 
   //
 
-  constructor : Self,
+  //constructor : Self,
   Composes : Composes,
   Aggregates : Aggregates,
   Associates : Associates,
@@ -112,14 +112,14 @@ var Proto =
 
 //
 
-_.classMake
+_.classDeclare
 ({
   cls : Self,
   parent : Parent,
   extend : Proto,
 });
 
-_.PlatformProvider.AdvancedMixin.mixin( Self );
+_.PlatformProviderMixin.mixin( Self );
 
 //
 

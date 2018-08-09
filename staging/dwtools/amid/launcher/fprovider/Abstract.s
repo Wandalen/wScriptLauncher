@@ -116,6 +116,7 @@ function _shell()
     }
   }
 
+  debugger
   return _.shell( self._shellOptions )
   .doThen( function ()
   {
@@ -184,7 +185,7 @@ var Proto =
 
   // relationships
 
-  constructor : Self,
+  //constructor : Self,
   Composes : Composes,
   Aggregates : Aggregates,
   Associates : Associates,
@@ -195,7 +196,7 @@ var Proto =
 
 //
 
-_.classMake
+_.classDeclare
 ({
   cls : Self,
   parent : Parent,

@@ -50,13 +50,13 @@ function _scriptGet()
   var self = this;
   var con = new wConsequence();
 
-  var requestUrl = _.urlJoin( self.parsedUrl.origin, 'script' )
+  var requestUrl = _.uri.uriJoin( self.parsedUrl.origin, 'script' )
   request( requestUrl, function ( data )
   {
      self.script = JSON.parse( data );
 
      //get launch options from server
-     var requestUrl = _.urlJoin( self.parsedUrl.origin, 'options' )
+     var requestUrl = _.uri.uriJoin( self.parsedUrl.origin, 'options' )
      request( requestUrl, function ( data )
      {
        self.options = JSON.parse( data );
@@ -84,26 +84,26 @@ function _beforeRun()
   if( self.options.platform !== 'firefox' )
   _global_.onbeforeunload = function terminate()
   {
-    var terminateUrl = _.urlJoin( self.parsedUrl.origin, 'terminate' );
+    var terminateUrl = _.uri.uriJoin( self.parsedUrl.origin, 'terminate' );
     request( terminateUrl );
   }
 
   _.io = io;
 
-  self.loggerToServer = new wLoggerToServer({ url : window.location.href });
+  self.loggerToServer = new _.LoggerToSever({ url : window.location.href });
   self.loggerToServer.permanentStyle = { bg : 'yellow', fg : 'black' };
 
   if( _.Tester )
   {
-    var test = _.timeReadyJoin( undefined,_.Tester._test );
+    var test = _.timeReadyJoin( undefined,_.Tester.test );
     var loggerPermanentStyle = _.mapExtend( {}, self.loggerToServer.permanentStyle );
 
     _.Tester.test = ( suiteName ) =>
     {
       self.loggerToServer.inputUnchain( console );
-      _.Tester.logger.onWrite = ( o ) =>
+      _.Tester.logger.onTransformEnd = ( o ) =>
       {
-        self.loggerToServer.log( o.output[ 0 ] );
+        self.loggerToServer.log( o.outputForPrinter[ 0 ] );
       };
       self.loggerToServer.permanentStyle = null;
 
@@ -129,8 +129,7 @@ function _beforeRun()
 function run ()
 {
   var self = this;
-
-  self.parsedUrl = _.urlParse( window.location.href );
+  self.parsedUrl = _.uri.uriParse( window.location.href );
 
   return new wConsequence().give()
   .doThen( () => self._scriptGet() )
@@ -158,7 +157,10 @@ function _scriptRun()
   var files = self.script.files;
   for( var i = 0; i < files.length; i++ )
   {
-    self.scriptLauncher.got( () => RemoteRequire.require( files[ i ] ) );
+    self.scriptLauncher.got( () =>
+    {
+      return RemoteRequire.require( files[ i ] )
+    });
   }
 
   return self.scriptLauncher;
@@ -169,10 +171,7 @@ function _packagesPrepare()
   var self = this;
   var packages  =
   [
-    'wColor',
-    'wLogger',
-    'wTesting',
-    'wloggertoserver',
+    // 'wTesting',
   ];
 
   for( var i = 0; i < packages.length; i++ )
@@ -190,7 +189,7 @@ function terminate()
   var con = self.loggerToServer.disconnect();
   con.got( function ()
   {
-    var requestUrl = _.urlJoin( self.parsedUrl.origin, 'terminate' );
+    var requestUrl = _.uri.uriJoin( self.parsedUrl.origin, 'terminate' );
     request( requestUrl, () => con.give() );
   })
 
@@ -240,7 +239,7 @@ var Proto =
 
 //
 
-_.classMake
+_.classDeclare
 ({
   cls : Self,
   parent : Parent,
