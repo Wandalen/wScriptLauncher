@@ -1,28 +1,10 @@
-
 (function _Launcher_js_() {
 
 'use strict';
 
-var remoteRequire = new wRemoteRequire();
-
-// window[ 'RemoteRequire' ] = remoteRequire;
-// window[ '_remoteRequire' ].resolve = remoteRequire.resolve;
-
-// debugger
-
-require( 'wTools' );
-
-var _ = _global_.wTools;
-
-_.include( 'wProto' );
-_.include( 'wWebUriFundamentals' );
-_.include( 'wloggertoserver' );
-_.include( 'socket.io-client/dist/socket.io.js' );
-_.include( 'wFiles' );
-_.include( 'wTesting' );
-
-
+var _ = wTools;
 var Parent = null;
+var RemoteRequire = new wRemoteRequireClient();
 
 var Self = function Launcher( o )
 {
@@ -68,13 +50,13 @@ function _scriptGet()
   var self = this;
   var con = new wConsequence();
 
-  var requestUrl = _.uri.join( self.parsedUrl.origin, 'script' )
+  var requestUrl = _.uri.uriJoin( self.parsedUrl.origin, 'script' )
   request( requestUrl, function ( data )
   {
      self.script = JSON.parse( data );
 
      //get launch options from server
-     var requestUrl = _.uri.join( self.parsedUrl.origin, 'options' )
+     var requestUrl = _.uri.uriJoin( self.parsedUrl.origin, 'options' )
      request( requestUrl, function ( data )
      {
        self.options = JSON.parse( data );
@@ -102,7 +84,7 @@ function _beforeRun()
   if( self.options.platform !== 'firefox' )
   _global_.onbeforeunload = function terminate()
   {
-    var terminateUrl = _.uri.join( self.parsedUrl.origin, 'terminate' );
+    var terminateUrl = _.uri.uriJoin( self.parsedUrl.origin, 'terminate' );
     request( terminateUrl );
   }
 
@@ -119,9 +101,10 @@ function _beforeRun()
     _.Tester.test = ( suiteName ) =>
     {
       self.loggerToServer.inputUnchain( console );
-
-      _.Tester.logger.onTransformEnd = ( o ) => self.loggerToServer.log( o.outputForPrinter[ 0 ] );
-
+      _.Tester.logger.onTransformEnd = ( o ) =>
+      {
+        self.loggerToServer.log( o.outputForPrinter[ 0 ] );
+      };
       self.loggerToServer.permanentStyle = null;
 
       self.testLauncher = test.call( _.Tester, suiteName );
@@ -146,12 +129,11 @@ function _beforeRun()
 function run ()
 {
   var self = this;
-
-  self.parsedUrl = _.uri.parse( window.location.href );
+  self.parsedUrl = _.uri.uriParse( window.location.href );
 
   return new wConsequence().give()
   .doThen( () => self._scriptGet() )
-  // .doThen( () => self._packagesPrepare() )
+  .doThen( () => self._packagesPrepare() )
   .doThen( () => self._beforeRun() )
   .doThen( () => self._scriptRun() )
   .doThen( ( err ) =>
@@ -207,7 +189,7 @@ function terminate()
   var con = self.loggerToServer.disconnect();
   con.got( function ()
   {
-    var requestUrl = _.uri.join( self.parsedUrl.origin, 'terminate' );
+    var requestUrl = _.uri.uriJoin( self.parsedUrl.origin, 'terminate' );
     request( requestUrl, () => con.give() );
   })
 
@@ -270,8 +252,8 @@ _.classDeclare
 
 
 _global_[ Self.nameShort ] = Self;
+_global_[ 'RemoteRequire' ] = RemoteRequire;
+_global_[ '_remoteRequire' ].resolve = RemoteRequire.resolve;
 _global_[ Self.nameShort ].run();
 
 })();
-
-

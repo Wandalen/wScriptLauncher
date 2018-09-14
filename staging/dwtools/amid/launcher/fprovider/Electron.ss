@@ -40,7 +40,7 @@ function runAct()
   self._appPath = require( 'electron' );
 
   var launcherPath  = _.path.resolve( __dirname, '../ElectronProcess.ss' );
-  launcherPath  = _.fileProvider.nativize( launcherPath );
+  launcherPath  = _.fileProvider.pathNativize( launcherPath );
 
   var port = _.urlParse( self.url ).port;
   self._flags =
