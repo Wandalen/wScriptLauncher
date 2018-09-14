@@ -21,7 +21,6 @@ _.include( 'socket.io-client/dist/socket.io.js' );
 _.include( 'wFiles' );
 _.include( 'wTesting' );
 
-
 var Parent = null;
 
 var Self = function Launcher( o )
@@ -48,17 +47,16 @@ function init( o )
   self.copy( o )
 }
 
-function request( url, onResponse )
+//
+
+function _urlJoin( path )
 {
-  var xmlHttp = new XMLHttpRequest();
-  xmlHttp.onreadystatechange = function ()
-  {
-    if ( xmlHttp.readyState == 4 && xmlHttp.status == 200 )
-    if( _.routineIs( onResponse ) )
-    onResponse( xmlHttp.responseText );
-  }
-  xmlHttp.open( "GET", url, true );
-  xmlHttp.send( null );
+  var self = this;
+
+  _.assert( arguments.length === 1 );
+  _.assert( _.objectIs( self.parsedUrl ) );
+
+  return _.uri.join( self.parsedUrl.origin, path );
 }
 
 //
@@ -66,29 +64,15 @@ function request( url, onResponse )
 function _scriptGet()
 {
   var self = this;
-  var con = new wConsequence();
+  var con = new wConsequence().give();
 
-  var requestUrl = _.uri.join( self.parsedUrl.origin, 'script' )
-  request( requestUrl, function ( data )
-  {
-     self.script = JSON.parse( data );
+  self.script = _.fileProvider.fileReadJson( self._urlJoin( 'script' ) )
+  self.options = _.fileProvider.fileReadJson( self._urlJoin( 'options' ) )
 
-     //get launch options from server
-     var requestUrl = _.uri.join( self.parsedUrl.origin, 'options' )
-     request( requestUrl, function ( data )
-     {
-       self.options = JSON.parse( data );
-       con.give();
-     })
-  });
+  // console.log( self.script );
 
-  con.doThen( () =>
-  {
-    console.log( self.script );
-
-    if( self.options.debug )
-    return _.timeOut( 2000 );
-  })
+  if( self.options.debug )
+  return _.timeOut( 2000 );
 
   return con;
 }
@@ -102,8 +86,7 @@ function _beforeRun()
   if( self.options.platform !== 'firefox' )
   _global_.onbeforeunload = function terminate()
   {
-    var terminateUrl = _.uri.join( self.parsedUrl.origin, 'terminate' );
-    request( terminateUrl );
+    _.fileProvider.fileRead( self._urlJoin( 'terminate' ) );
   }
 
   _.io = io;
@@ -205,13 +188,11 @@ function terminate()
   var self = this;
 
   var con = self.loggerToServer.disconnect();
-  con.got( function ()
-  {
-    var requestUrl = _.uri.join( self.parsedUrl.origin, 'terminate' );
-    request( requestUrl, () => con.give() );
-  })
+  var terminateUrl = self._urlJoin( 'terminate' );
+  var terminateCon = _.fileProvider.fileRead({ filePath : terminateUrl, sync : 0 });
+  con.doThen( terminateCon );
 
- return con;
+  return con;
 }
 
 // --
@@ -236,7 +217,8 @@ var Statics =
   _scriptGet : _scriptGet,
   _scriptRun : _scriptRun,
   _packagesPrepare : _packagesPrepare,
-  _beforeRun : _beforeRun
+  _beforeRun : _beforeRun,
+  _urlJoin : _urlJoin,
 }
 
 // --
