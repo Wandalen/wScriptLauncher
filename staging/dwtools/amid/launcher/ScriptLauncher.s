@@ -189,7 +189,7 @@ function _preparePort()
 function _serverLaunch( )
 {
   var self = this;
-  var nativize = _.fileProvider.nativize;
+  var nativize = _.fileProvider.pathNativize;
   var con = new wConsequence();
   var rootDir = _.path.resolve( __dirname, '../../../..' );
 
@@ -330,7 +330,7 @@ function _scriptPrepare()
   else
   {
     debugger
-    self.filePath = _.fileProvider.nativize( _.path.resolve( _.path.current(), self.filePath ) );
+    self.filePath = _.fileProvider.pathNativize( _.path.resolve( _.path.current(), self.filePath ) );
     console.log( self.filePath )
     var stat = _.fileProvider.fileStat( self.filePath );
     if( stat )
@@ -522,7 +522,7 @@ var Associates =
 
 var Restricts =
 {
-  launchDone : new wConsequence(),
+  launchDone : _.define.own( new wConsequence() ),
   server : null,
   serverPort : null,
   remoteRequireServer : null,

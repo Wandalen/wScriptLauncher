@@ -45,7 +45,7 @@ function runAct()
   {
     var con = new wConsequence();
     var profilePath = _.path.resolve( __dirname, '../../../../tmp.tmp/chrome' );
-    profilePath = _.fileProvider.nativize( profilePath );
+    profilePath = _.fileProvider.pathNativize( profilePath );
     //!!! add automatic chrome path finding
     var finder = require( 'chrome-launcher/dist/chrome-finder' );
     var chromePaths = finder[ process.platform ]();

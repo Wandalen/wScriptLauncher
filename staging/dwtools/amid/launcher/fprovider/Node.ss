@@ -45,7 +45,7 @@ function runAct()
     if( err )
     throw _.err( err );
 
-    self._appPath = _.fileProvider.nativize( path );
+    self._appPath = _.fileProvider.pathNativize( path );
     self._flags = [ self.url ];
     con.give();
   })
