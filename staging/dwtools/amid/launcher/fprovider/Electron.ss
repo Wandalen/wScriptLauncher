@@ -40,7 +40,7 @@ function runAct()
   self._appPath = require( 'electron' );
 
   var launcherPath  = _.path.resolve( __dirname, '../ElectronProcess.ss' );
-  launcherPath  = _.fileProvider.pathNativize( launcherPath );
+  launcherPath  = _.fileProvider.path.nativize( launcherPath );
 
   var port = _.urlParse( self.url ).port;
   self._flags =
@@ -66,10 +66,11 @@ function runAct()
   self._plistEdit();
 
   var con = self._shell();
-  con.doThen( function()
+  con.then( function()
   {
     if( self._plistChanged )
     self._plistRestore();
+    return null;
   });
 
   return con;

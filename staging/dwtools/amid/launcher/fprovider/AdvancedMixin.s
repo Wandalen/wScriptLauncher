@@ -93,23 +93,21 @@ function _xvfbDisplayKill()
 {
   var self = this;
 
-  var con = new wConsequence().give();
-
   /*
     Kill xvfb display instance with delay to avoid X server error
     "Resource temporarily unavailable on X server :display"
   */
 
-  con.timeOutThen( 1000, function()
+  return _.timeOut( 1000, function()
   {
     if( self.verbosity )
     console.log( 'Killing Xvfb display instance, pid: ' + self._xvfbDisplayPid );
 
     var res = process.kill( self._xvfbDisplayPid );
     _.assert( res, 'Display process: ' +  self._xvfbDisplayPid + ' not killed' );
+    
+    return true;
   })
-
-  return con;
 }
 
 //
@@ -163,7 +161,7 @@ function _plistRestore()
   var self = this;
 
   if( !self.allowPlistEdit )
-  return;
+  return false;
 
   if( _.fileProvider.fileStat( self._plistPath ) )
   {
@@ -189,6 +187,8 @@ function _plistRestore()
     }
 
   }
+  
+  return true;
 }
 
 //

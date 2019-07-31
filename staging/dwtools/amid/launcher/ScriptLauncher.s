@@ -91,7 +91,7 @@ function launch()
 
   self.launchDone = self._xvfbCheck();
 
-  var feedback = new wConsequence();
+  var feedback = new _.Consequence();
 
   process.on( 'SIGINT', function()
   {
@@ -100,18 +100,26 @@ function launch()
     var con = self.terminate();
 
     if( self.handlingFeedback )
-    con.doThen( () => feedback.give( self._provider ) );
+    con.finally( () => 
+    { 
+      feedback.take( self._provider );
+      return null; 
+    });
     else
-    self.launchDone.give();
+    self.launchDone.take( null );
 
-    self.launchDone.doThen( () => process.exit() );
+    self.launchDone.finally( () => 
+    { 
+      process.exit();
+      return null; 
+    });
   });
 
   if( self.platform === 'node' )
   {
     self.launchDone
     .ifNoErrorThen( () => self._platformLaunch() )
-    .ifNoErrorThen( () => feedback.give( self._provider ) );
+    .ifNoErrorThen( () => feedback.take( self._provider ) );
   }
   else
   {
@@ -124,26 +132,31 @@ function launch()
     {
       self.launchDone
       .ifNoErrorThen( () => self._platformLaunch() )
-      .ifNoErrorThen( () => feedback.give( self._provider ) );
+      .ifNoErrorThen( () => feedback.take( self._provider ) );
     }
   }
 
   self.launchDone.ifErrorThen( ( err ) =>
   {
     self.terminate()
-    .got( () => feedback.error( err ) );
+    .finally( () => 
+    { 
+      feedback.error( err );
+      return null; 
+    });
   });
 
   if( self.handlingFeedback )
   feedback
-  .got( function ( err,got )
+  .finally( function ( err,got )
   {
     if( err )
     throw _.errLog( err );
 
     logger.log( got );
 
-    self.launchDone.give()
+    self.launchDone.take( null );
+    return null;
   });
 
   return self.launchDone;
@@ -155,16 +168,20 @@ function terminate()
 {
   var self = this;
 
-  var con = new wConsequence().give();
+  var con = new _.Consequence().take( null );
 
   if( self._provider )
-  con.doThen( () => self._provider.terminate() );
+  con.finally( () => self._provider.terminate() );
 
   if( self.remoteRequireServer )
-  con.doThen( () => self.remoteRequireServer.stop() )
+  con.finally( () => self.remoteRequireServer.stop() )
 
   if( self.server && self.server.isRunning )
-  con.doThen( () => self.server.io.close( () => self.server.close() ) );
+  con.finally( () => 
+  { 
+    self.server.io.close( () => self.server.close() );
+    return null; 
+  });
 
   return con;
 }
@@ -176,12 +193,13 @@ function _preparePort()
   var self = this;
 
   return _.portGet( self.serverPort )
-  .doThen( ( err, port ) =>
+  .finally( ( err, port ) =>
   {
     if( err )
     throw _.err( err );
 
-    self.serverPort = port
+    self.serverPort = port;
+    return null;
   });
 }
 //
@@ -189,8 +207,7 @@ function _preparePort()
 function _serverLaunch( )
 {
   var self = this;
-  var nativize = _.fileProvider.pathNativize;
-  var con = new wConsequence();
+  var con = new _.Consequence();
   var rootDir = _.path.resolve( __dirname, '../../../..' );
 
   // var script = _.fileProvider.fileRead( self.filePath );
@@ -199,8 +216,8 @@ function _serverLaunch( )
   self.server = require( 'http' ).createServer( app );
   self.server.io = require( 'socket.io' )( self.server );
 
-  var statics = nativize( _.path.join( rootDir, 'staging/dwtools/amid/launcher/static' ) );
-  var modules = nativize( _.path.join( rootDir, 'node_modules' ) );
+  var statics = _.fileProvider.path.nativize( _.path.join( rootDir, 'staging/dwtools/amid/launcher/static' ) );
+  var modules = _.fileProvider.path.nativize( _.path.join( rootDir, 'node_modules' ) );
 
   self.remoteRequireServer = _.RemoteRequireServer
   ({
@@ -216,7 +233,7 @@ function _serverLaunch( )
 
   app.get( '/', function ( req, res )
   {
-    res.sendFile( nativize( _.path.join( statics, 'index.html' ) ) );
+    res.sendFile( _.fileProvider.path.nativize( _.path.join( statics, 'index.html' ) ) );
   });
 
   // app.get( '/include', function ( req, res )
@@ -228,7 +245,7 @@ function _serverLaunch( )
 
   app.get( '/script', function ( req, res )
   {
-    var stat = _.fileProvider.fileStat( self.filePath );
+    var stat = _.fileProvider.statRead( self.filePath );
 
     var files;
 
@@ -307,7 +324,7 @@ function _serverLaunch( )
     console.log( `http://localhost:${self.serverPort}` );
 
     self.server.isRunning = true;
-    con.give();
+    con.take( null );
   });
 
   return con;
@@ -318,23 +335,23 @@ function _serverLaunch( )
 function _scriptPrepare()
 {
   var self = this;
-  var con = new wConsequence();
+  var con = new _.Consequence();
 
   debugger
 
   if( !self.filePath )
   {
     self._script = function(){ logger.log( wScriptLauncher.helpGet() ) };
-    con.give();
+    con.take( null );
   }
   else
   {
     debugger
-    self.filePath = _.fileProvider.pathNativize( _.path.resolve( _.path.current(), self.filePath ) );
+    self.filePath = _.fileProvider.path.nativize( _.path.resolve( _.path.current(), self.filePath ) );
     console.log( self.filePath )
-    var stat = _.fileProvider.fileStat( self.filePath );
+    var stat = _.fileProvider.statRead( self.filePath );
     if( stat )
-    con.give();
+    con.take( null );
     else
     con.error( _.err( self.filePath, ' not exist.' ) );
   }
@@ -388,7 +405,11 @@ function _platformLaunch()
 
   /* !!!workaround for chrome, process.on( 'close' ) wont work for some reason */
   if( self.platform === 'chrome' )
-  result.doThen( () => { self.terminate() } );
+  result.finally( () => 
+  { 
+    self.terminate();
+    return null; 
+  });
 
   if( self._provider._shellOptions )
   self._provider._shellOptions.process.on( 'close', () =>  self.terminate() );
@@ -402,13 +423,14 @@ function _xvfbCheck()
 {
   var self = this;
 
-  var con = new wConsequence().give();
+  var con = new _.Consequence().take( null );
 
   if( process.platform !== 'linux' || self.platform != 'firefox' || !self.headless )
   return con;
 
-  con.got( function ()
-  {
+  con.then( function ()
+  { 
+    let ready = new _.Consequence();
     var which =  require( 'which' );
     which( 'Xvfb', function ( notInstalled )
     {
@@ -419,8 +441,9 @@ function _xvfbCheck()
         logger.log( _.strColor.bg( _.strColor.fg( msg, 'red' ) , 'yellow' ) );
         self.headless = false;
       }
-      con.give();
+      ready.take( null );
     });
+    return ready;
   })
 
   return con;
@@ -522,7 +545,7 @@ var Associates =
 
 var Restricts =
 {
-  launchDone : _.define.own( new wConsequence() ),
+  launchDone : _.define.own( new _.Consequence() ),
   server : null,
   serverPort : null,
   remoteRequireServer : null,

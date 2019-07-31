@@ -64,7 +64,7 @@ function _urlJoin( path )
 function _scriptGet()
 {
   var self = this;
-  var con = new wConsequence().give();
+  var con = new _.Consequence().take( null );
 
   self.script = _.fileProvider.fileReadJson( self._urlJoin( 'script' ) )
   self.options = _.fileProvider.fileReadJson( self._urlJoin( 'options' ) )
@@ -113,7 +113,7 @@ function _beforeRun()
       {
         self.loggerToServer.permanentStyle = loggerPermanentStyle;
         self.loggerToServer.inputFrom( console );
-        self.scriptLauncher.give();
+        self.scriptLauncher.take( null );
       });
 
       return self.testLauncher;
@@ -132,12 +132,12 @@ function run ()
 
   self.parsedUrl = _.uri.parse( window.location.href );
 
-  return new wConsequence().give()
-  .doThen( () => self._scriptGet() )
-  // .doThen( () => self._packagesPrepare() )
-  .doThen( () => self._beforeRun() )
-  .doThen( () => self._scriptRun() )
-  .doThen( ( err ) =>
+  return new _.Consequence().take( null )
+  .then( () => self._scriptGet() )
+  // .then( () => self._packagesPrepare() )
+  .then( () => self._beforeRun() )
+  .then( () => self._scriptRun() )
+  .finally( ( err ) =>
   {
     if( err )
     _.errLog( err );
@@ -153,12 +153,12 @@ function _scriptRun()
 {
   var self = this;
 
-  self.scriptLauncher = new wConsequence().give();
+  self.scriptLauncher = new _.Consequence().take( null );
 
   var files = self.script.files;
   for( var i = 0; i < files.length; i++ )
   {
-    self.scriptLauncher.got( () =>
+    self.scriptLauncher.then( () =>
     {
       return RemoteRequire.require( files[ i ] )
     });
@@ -190,7 +190,7 @@ function terminate()
   var con = self.loggerToServer.disconnect();
   var terminateUrl = self._urlJoin( 'terminate' );
   var terminateCon = _.fileProvider.fileRead({ filePath : terminateUrl, sync : 0 });
-  con.doThen( terminateCon );
+  con.then( terminateCon );
 
   return con;
 }

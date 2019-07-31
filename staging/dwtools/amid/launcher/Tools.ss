@@ -13,11 +13,7 @@ var Self = wTools;
 function portGet()
 {
   _.assert( arguments.length <= 1 );
-
-  var con = new wConsequence();
-  getPort.apply( this, arguments )
-  .then( port => con.give( port ) );
-  return con;
+  return _.Consequence.From( getPort.apply( this, arguments ) )
 }
 
 //

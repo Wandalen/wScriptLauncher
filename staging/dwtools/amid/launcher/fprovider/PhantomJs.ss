@@ -69,7 +69,7 @@ function runAct()
     self._shellOptions.process.on( 'message', function( msg )
     {
       if( msg === 'ready' )
-      con.give();
+      con.take( null );
     });
  });
 

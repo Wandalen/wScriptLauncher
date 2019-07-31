@@ -48,7 +48,7 @@ function request( url, onResponse )
 function _scriptGet()
 {
   var self = this;
-  var con = new wConsequence();
+  var con = new _.Consequence();
 
   var requestUrl = _.uri.uriJoin( self.parsedUrl.origin, 'script' )
   request( requestUrl, function ( data )
@@ -60,16 +60,18 @@ function _scriptGet()
      request( requestUrl, function ( data )
      {
        self.options = JSON.parse( data );
-       con.give();
+       con.take( null );
      })
   });
 
-  con.doThen( () =>
+  con.then( () =>
   {
     console.log( self.script );
 
     if( self.options.debug )
     return _.timeOut( 2000 );
+    
+    return null;
   })
 
   return con;
@@ -113,7 +115,7 @@ function _beforeRun()
       {
         self.loggerToServer.permanentStyle = loggerPermanentStyle;
         self.loggerToServer.inputFrom( console );
-        self.scriptLauncher.give();
+        self.scriptLauncher.take( null );
       });
 
       return self.testLauncher;
@@ -131,18 +133,20 @@ function run ()
   var self = this;
   self.parsedUrl = _.uri.uriParse( window.location.href );
 
-  return new wConsequence().give()
-  .doThen( () => self._scriptGet() )
-  .doThen( () => self._packagesPrepare() )
-  .doThen( () => self._beforeRun() )
-  .doThen( () => self._scriptRun() )
-  .doThen( ( err ) =>
+  return new _.Consequence().take( null )
+  .then( () => self._scriptGet() )
+  .then( () => self._packagesPrepare() )
+  .then( () => self._beforeRun() )
+  .then( () => self._scriptRun() )
+  .then( ( err ) =>
   {
     if( err )
     _.errLog( err );
 
     if( self.options.terminatingAfter )
     return self.terminate();
+    
+    return null;
   });
 }
 
@@ -152,7 +156,7 @@ function _scriptRun()
 {
   var self = this;
 
-  self.scriptLauncher = new wConsequence().give();
+  self.scriptLauncher = new _.Consequence().take( null );
 
   var files = self.script.files;
   for( var i = 0; i < files.length; i++ )
@@ -178,6 +182,8 @@ function _packagesPrepare()
   {
     _.include( packages[ i ] );
   }
+  
+  return true;
 }
 
 //
@@ -190,7 +196,7 @@ function terminate()
   con.got( function ()
   {
     var requestUrl = _.uri.uriJoin( self.parsedUrl.origin, 'terminate' );
-    request( requestUrl, () => con.give() );
+    request( requestUrl, () => con.take( null ) );
   })
 
  return con;

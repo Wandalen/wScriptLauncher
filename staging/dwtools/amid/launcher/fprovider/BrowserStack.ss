@@ -75,11 +75,11 @@ function runAct()
     // })
 
     // var closed = self.driver.wait( untilOpened );
-    // var con = wConsequence.from( closed );
+    // var con = _.Consequence.from( closed );
 
-    // con.doThen( () =>
+    // con.then( () =>
     // {
-    //   return wConsequence.from( self.driver.quit() )
+    //   return _.Consequence.from( self.driver.quit() )
     // })
 
 
@@ -98,13 +98,13 @@ function terminateAct()
   {
     var quit = self.driver.quit();
     self.con
-    .give()
-    .doThen( wConsequence.from( quit ) )
-    .doThen( () => self.stopBrowserstackLocal() );
+    .take( null )
+    .then( _.Consequence.From( quit ) )
+    .then( () => self.stopBrowserstackLocal() );
   }
   else
   {
-    return new wConsequence().give();
+    return new _.Consequence().take( null );
   }
 
 
@@ -158,7 +158,7 @@ function runBrowserstackLocal( accessKey )
 
   self.browserstackLocal = new browserstack.Local();
 
-  var con = new wConsequence();
+  var con = new _.Consequence();
 
   var args =
   {
@@ -167,7 +167,7 @@ function runBrowserstackLocal( accessKey )
     'forceLocal' : true
   }
 
-  self.browserstackLocal.start( args, () => con.give() );
+  self.browserstackLocal.start( args, () => con.take( null ) );
 
   return con;
 }
@@ -177,16 +177,16 @@ function runBrowserstackLocal( accessKey )
 function stopBrowserstackLocal()
 {
   var self = this;
-  var con = new wConsequence();
+  var con = new _.Consequence();
 
   if( self.browserstackLocal.isRunning() )
   self.browserstackLocal.stop( () =>
   {
     _.assert( !self.browserstackLocal.isRunning() );
-    con.give();
+    con.take( null );
   })
   else
-  con.give();
+  con.take( null );
 
   return con;
 }
