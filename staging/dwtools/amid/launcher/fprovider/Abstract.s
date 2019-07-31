@@ -115,8 +115,8 @@ function _shell()
       mode : 'spawn',
       execPath : self._appPath,
       args : self._flags,
-      stdio : 'ignore',
-      outputPiping : 0,
+      stdio : 'pipe',
+      outputPiping : 1,
       verbosity : self.verbosity,
     }
   }

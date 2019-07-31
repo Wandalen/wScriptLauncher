@@ -42,7 +42,7 @@ function runAct()
   var launcherPath  = _.path.resolve( __dirname, '../ElectronProcess.ss' );
   launcherPath  = _.fileProvider.path.nativize( launcherPath );
 
-  var port = _.urlParse( self.url ).port;
+  var port = _.uri.parse( self.url ).port;
   self._flags =
   [
     launcherPath,

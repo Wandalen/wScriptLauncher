@@ -8,7 +8,7 @@ var remoteRequire = new wRemoteRequire();
 // window[ 'RemoteRequire' ] = remoteRequire;
 // window[ '_remoteRequire' ].resolve = remoteRequire.resolve;
 
-// debugger
+debugger
 
 require( 'wTools' );
 
@@ -119,7 +119,7 @@ function _beforeRun()
       return self.testLauncher;
     }
   }
-
+  
   self.loggerToServer.inputFrom( console );
   return self.loggerToServer.connect();
 }
@@ -137,7 +137,7 @@ function run ()
   // .then( () => self._packagesPrepare() )
   .then( () => self._beforeRun() )
   .then( () => self._scriptRun() )
-  .finally( ( err ) =>
+  .finally( ( err, got ) =>
   {
     if( err )
     _.errLog( err );
@@ -159,7 +159,7 @@ function _scriptRun()
   for( var i = 0; i < files.length; i++ )
   {
     self.scriptLauncher.then( () =>
-    {
+    { 
       return RemoteRequire.require( files[ i ] )
     });
   }
