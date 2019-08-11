@@ -5,11 +5,10 @@
 if( typeof module !== 'undefined' )
 {
 
-  require( 'wTools' );
+  var _ = require( 'wTools' );
+  _.include( 'wExternalFundamentals' )
   var electron = require( 'electron' );
 }
-
-var _ = wTools;
 
 var app = electron.app;
 var BrowserWindow = electron.BrowserWindow;
@@ -50,7 +49,7 @@ function windowInit( )
 
   window.loadURL( args.url );
 
-  //window.webContents.openDevTools();
+  window.webContents.openDevTools();
 
   window.on( 'closed', function ()
   {

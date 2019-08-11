@@ -69,15 +69,19 @@ function terminateAct()
 {
   var self = this;
 
-  var con = new wConsequence().give();
+  var con = new _.Consequence().take( null );
 
-  con.doThen( () => self._shellOptions.process.kill( 'SIGINT' ) );
+  con.then( () => 
+  { 
+    self._shellOptions.process.kill( 'SIGINT' );
+    return null; 
+  });
 
   if( self._headlessNoFocus )
-  con.doThen( () => self._plistRestore() );
+  con.then( () => self._plistRestore() );
 
   if( self._xvfbDisplayPid )
-  con.doThen( () => self._xvfbDisplayKill() );
+  con.then( () => self._xvfbDisplayKill() );
 
   return con;
 }
@@ -104,27 +108,28 @@ function _shell()
     // }
 
     debugger
-    self._appPath = _.fileProvider.pathNativize( self._appPath );
+    self._appPath = _.fileProvider.path.nativize( self._appPath );
 
     self._shellOptions =
     {
       mode : 'spawn',
-      path : self._appPath,
+      execPath : self._appPath,
       args : self._flags,
-      stdio : 'ignore',
-      outputPiping : 0,
+      stdio : 'pipe',
+      outputPiping : 1,
       verbosity : self.verbosity,
     }
   }
 
   debugger
   return _.shell( self._shellOptions )
-  .doThen( function ()
+  .then( function ()
   {
     self._shellOptions.process.on( 'close', function ()
     {
       self._plistRestore();
     })
+    return null;
   })
 }
 

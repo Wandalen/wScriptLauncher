@@ -40,9 +40,9 @@ function runAct()
   var self = this;
 
   var profilePath = _.path.resolve( __dirname, '../../../../tmp.tmp/firefox' );
-  profilePath = _.fileProvider.pathNativize( profilePath );
+  profilePath = _.fileProvider.path.nativize( profilePath );
   var userJsPath = _.path.join( profilePath, 'user.js' );
-  userJsPath = _.fileProvider.pathNativize( userJsPath );
+  userJsPath = _.fileProvider.path.nativize( userJsPath );
 
   self._flags =
   [
@@ -54,11 +54,11 @@ function runAct()
 
   function _createProfile()
   {
-    self._appPath = _.fileProvider.pathNativize( self._appPath );
+    self._appPath = _.fileProvider.path.nativize( self._appPath );
     var createProfile = self._appPath + ' -CreateProfile ' + ` "launcher ${profilePath}" `;
 
     return _.shell( createProfile )
-    .doThen( function ()
+    .then( function ()
     {
       var prefs =
       [
@@ -72,12 +72,12 @@ function runAct()
     })
   }
 
-  var con = new wConsequence().give();
+  var con = new _.Consequence().take( null );
 
   /* if user.js doesn't exist -> create new profile and set user prefs. */
 
   if( !_.objectIs( _.fileProvider.fileStat( userJsPath ) ) )
-  con.doThen( () => _createProfile() );
+  con.then( () => _createProfile() );
 
   if( self._headlessNoFocus )
   self._plistEdit();
@@ -85,14 +85,14 @@ function runAct()
   if( self.headless && process.platform === 'linux' )
   {
     var display = self._xvfbDisplayGet();
-    con.doThen( () => self._xvfbDisplaySet( display ) );
-    con.doThen( () => self._flags.push( `--display=:${display}` ) );
+    con.then( () => self._xvfbDisplaySet( display ) );
+    con.then( () => self._flags.push( `--display=:${display}` ) );
   }
 
-  con.doThen( () => self._shell() );
+  con.then( () => self._shell() );
 
   if( self._plistChanged )
-  con.doThen( () => self._plistRestore() );
+  con.then( () => self._plistRestore() );
 
   return con;
 }

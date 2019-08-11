@@ -43,9 +43,9 @@ function runAct()
 
   function _runAct()
   {
-    var con = new wConsequence();
+    var con = new _.Consequence();
     var profilePath = _.path.resolve( __dirname, '../../../../tmp.tmp/chrome' );
-    profilePath = _.fileProvider.pathNativize( profilePath );
+    profilePath = _.fileProvider.path.nativize( profilePath );
     //!!! add automatic chrome path finding
     var finder = require( 'chrome-launcher/dist/chrome-finder' );
     var chromePaths = finder[ process.platform ]();
@@ -102,18 +102,23 @@ function runAct()
 
     var con = self._shell();
 
-    con.doThen( function()
+    con.then( function()
     {
       if( self._plistChanged )
       self._plistRestore();
+      return null;
     });
 
     return con;
   }
 
   return _.portGet( debuggingPort )
-  .doThen( ( err, port ) => { debuggingPort  = port } )
-  .doThen( () => _runAct() );
+  .then( ( port ) => 
+  { 
+    debuggingPort = port;
+    return null;
+  })
+  .then( () => _runAct() );
 }
 
 //
@@ -122,7 +127,7 @@ function runAct()
 // {
 //   var self = this;
 //
-//   var con = new wConsequence();
+//   var con = new _.Consequence();
 //
 //   var flags = [];
 //
@@ -140,7 +145,7 @@ function runAct()
 //     console.log( self._shellOptions.kill );
 //     if( self.verbosity >= 3 )
 //     logger.log( `Chrome debugging port running on ${chrome.port}` );
-//     con.give();
+//     con.take( null );
 //   })
 //   .catch( function ( err )
 //   {
@@ -156,12 +161,12 @@ function runAct()
 // {
 //   var self = this;
 //
-//   var con = new wConsequence().give();
+//   var con = new _.Consequence().take( null );
 //
 //   if( !self._shellOptions.process )
-//   con.doThen( () => _.err( 'Process is not running' ) );
+//   con.then( () => _.err( 'Process is not running' ) );
 //   else
-//   con.doThen( () => self._shellOptions.process.kill() );
+//   con.then( () => self._shellOptions.process.kill() );
 //
 //   return con;
 // }

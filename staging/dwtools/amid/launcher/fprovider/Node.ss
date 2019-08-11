@@ -37,7 +37,7 @@ function runAct()
 {
   var self = this;
 
-  var con = new wConsequence();
+  var con = new _.Consequence();
 
   var which =  require( 'which' );
   which( 'node', function ( err, path )
@@ -45,18 +45,18 @@ function runAct()
     if( err )
     throw _.err( err );
 
-    self._appPath = _.fileProvider.pathNativize( path );
+    self._appPath = _.fileProvider.path.nativize( path );
     self._flags = [ self.url ];
-    con.give();
+    con.take( null );
   })
 
 
-  con.doThen( function ()
+  con.then( function ()
   {
     self._shellOptions =
     {
       mode : 'spawn',
-      path : self._appPath,
+      execPath : self._appPath,
       args : self._flags,
       stdio : 'pipe',
       outputPiping : 1,
