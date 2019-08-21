@@ -1,0 +1,92 @@
+
+about :
+
+  name : 'wScriptLauncher'
+  description : 'Provides a simple human-machine, machine-machine interfaces to run a script file on a platform of interest and get output to your terminal.'
+  version : '0.4.0'
+  enabled : 1
+  interpreters :
+  - njs >= 8.0.0
+  - chrome >= 60.0.0
+  - firefox >= 60.0.0
+  keywords :
+  - wTools
+  license : MIT
+  author : 'Kostiantyn Wandalen <wanalen@willbe.so>'
+  contributors :
+  - 'Kostiantyn Wandalen <wanalen@willbe.so>'
+  npm.name : 'wscriptlauncher'
+  npm.scripts :
+    test : 'wtest .run staging/**'
+    test2 : 'node staging/dwtools/amid/launcher/Launcher.ss sample/test.js allowPlistEdit : 0'
+    docgen : 'wdocgen .build staging'
+  npm.bin :
+    launcher : 'staging/dwtools/amid/launcher/Launcher.ss'
+
+path :
+
+  repository : git+https:///github.com/Wandalen/wScriptLauncher.git
+  bugtracker : https:///github.com/Wandalen/wScriptLauncher/issues
+
+step :
+
+  proto.export :
+    inherit : module.export
+    export : path::proto
+    tar : 0
+    criterion :
+      content : 'proto'
+
+  doc.export :
+    inherit : module.export
+    export : path::doc
+    tar : 0
+    criterion :
+      content : 'doc'
+
+  npm.export :
+    inherit : module.export
+    export : out.npm
+    tar : 0
+    criterion :
+      content : 'npm'
+
+  npm.publish :
+    shell : npm publish
+
+build :
+
+  proto.export :
+    criterion :
+      content : 'proto'
+      export : 1
+    steps :
+      # - build::debug.raw
+      - step::proto.export
+
+  doc.export :
+    criterion :
+      content : 'doc'
+      export : 1
+    steps :
+      # - build::debug.raw
+      - step::doc.export
+
+  npm.export :
+    criterion :
+      content : 'npm'
+      export : 1
+    steps :
+      # - build::debug.raw
+      # - step::npm.export
+      - step::npm.publish
+
+  export :
+
+    criterion :
+      default : 1
+      export : 1
+    steps :
+      # - build::npm
+      - build::proto.export
+      # - build::doc.export
