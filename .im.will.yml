@@ -71,6 +71,7 @@ submodule :
     path : hd://.
     enabled : 0 # submodule
     criterion :
+      development : 1
 
 path :
 
